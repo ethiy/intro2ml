@@ -5,17 +5,18 @@ Created on Fri Jan 26 15:54:32 2018
 @author: Oussama Ennafii
 """
 
-import time
-
 import skimage.io
+import skimage.color
 
 import numpy as np
 import scipy.spatial.distance
 
-import matplotlib.pyplot as plt
+import moviepy.editor
 
 import random
 import itertools
+
+import time
 
 
 def read_image(filename):
@@ -55,7 +56,9 @@ def update_pixel(i, j, cluster_map, image, clusters, cluster_cardinals):
     clusters[new] = (clusters[new] * (cluster_cardinals[new] - 1) + image[i, j]) / cluster_cardinals[new]
     if cluster_map[i, j] > -1:
         clusters[cluster_map[i, j]] = (
-            (clusters[cluster_map[i, j]] * cluster_cardinals[cluster_map[i, j]] - image[i, j]) / (cluster_cardinals[cluster_map[i, j]] - 1)
+            (clusters[cluster_map[i, j]] * cluster_cardinals[cluster_map[i, j]]
+            -
+            image[i, j]) / (cluster_cardinals[cluster_map[i, j]] - 1)
             if cluster_cardinals[cluster_map[i, j]] > 1 else 0
         )
         cluster_cardinals[cluster_map[i, j]] -= 1
@@ -86,19 +89,34 @@ def update_pixels(image, clusters, cluster_cardinals, cluster_map):
 
 def k_means(image, k, iterations=1, epsilon=0):
     cluster_map, clusters = initiate(image, k)
-    cluster_map, clusters, cluster_cardinals = update_pixels(image, clusters, k * [1], cluster_map)
-    plt.imshow(cluster_map)
-    plt.show()
+    if epsilon != 0:
+        iterations = 10
+    cluster_maps = iterations * [None]
+    for iteration in range(iterations):
+        cluster_map, clusters, cluster_cardinals = update_pixels(
+            image,
+            clusters,
+            k * [1],
+            cluster_map
+        )
+        cluster_maps[iteration] = cluster_map
+        print '--> Iteration :', iteration
+    return cluster_maps
     
     
 def main():
-    image = read_image('complexite.jpg')
+    image = read_image('label_3_it_17.jpg')
     print 'Il y a:', image.size, 'pixels'
-    k = 20
+    k = 5
     print 'Le nombre de clusters k =', k
     start = time.time()
-    k_means(image, k, iterations=1, epsilon=0)
+    cluster_maps = k_means(image, k, iterations=10, epsilon=0)
     print '-->', time.time()-start, 'seconds'
+    moviepy.editor.ImageSequenceClip(
+        [skimage.color.label2rgb(cm) for cm in cluster_maps],
+        fps=1
+    ).write_videofile('test.mp4', fps = 1)
+
 
 if __name__ == '__main__':
     main()
