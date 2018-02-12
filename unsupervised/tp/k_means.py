@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Jan 26 15:54:32 2018
-
-@author: Oussama Ennafii
-"""
 
 import skimage
 import skimage.io
@@ -24,7 +19,7 @@ import time
 
 def read_image(filename):
     return skimage.io.imread(filename)
-    
+
 
 def sample(image, k):
     l, w = image.shape[:2]
@@ -38,11 +33,11 @@ def sample(image, k):
         k
     )
     return (indices, [image[i, j] for i, j in indices])
-    
+
 
 def distance(lhs, rhs):
     return scipy.spatial.distance.euclidean(lhs, rhs)
-    
+
 
 def initiate(image, k):
     init_indices, clusters = sample(image, k)
@@ -93,7 +88,7 @@ def update_pixels(image, clusters, cluster_cardinals, cluster_map):
         clusters,
         cluster_cardinals
     )
-    
+
 
 def barycenter(image):
     return np.mean(image)
@@ -132,7 +127,7 @@ def k_means(image, k, iterations=1, epsilon=0):
     for iteration in range(iterations):
         print clusters
         print cluster_cardinals
-        
+
         cluster_map, clusters, cluster_cardinals = update_pixels(
             image,
             clusters,
@@ -145,8 +140,8 @@ def k_means(image, k, iterations=1, epsilon=0):
         print '---> inertia :', Ib[iteration]
         print '---> population :', cluster_cardinals
     return (cluster_maps, Ib)
-    
-    
+
+
 def main():
     image = read_image('complexite.jpg')
     print 'Image size: ', image.shape[:2]
@@ -164,7 +159,7 @@ def main():
     moviepy.editor.ImageSequenceClip(
         [skimage.color.label2rgb(cm) for cm in cluster_maps],
         fps=1
-    ).write_videofile('k-means_iterations.mp4', fps = 1)
+    ).write_videofile('k-means_iterations.mp4', fps=1)
     plt.show()
 
 
