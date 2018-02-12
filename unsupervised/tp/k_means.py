@@ -66,14 +66,17 @@ def update_pixels(cluster_map, image, clusters):
     clusters, cluster_cardinals = zip(
         *[
             (
-                barycenter(image[cluster_map == center]),
+                (
+                    np.mean(
+                        image[cluster_map == center],
+                        axis=0
+                    )
+                ),
                 np.sum(cluster_map == center)
             )
             for center in range(len(clusters))
         ]
     )
-    print cluster_cardinals
-    print np.sum(cluster_cardinals) == l*w
     return (
         cluster_map,
         clusters,
@@ -108,8 +111,6 @@ def k_means(image, k, iterations=1, epsilon=0):
             clusters
         )
         iteration += 1
-        print clusters
-        print ib
         cluster_maps.append(cluster_map)
         Ibs.append(ib)
         print '----> iteration: ', iteration
@@ -119,21 +120,24 @@ def k_means(image, k, iterations=1, epsilon=0):
 
 
 def main():
-    image = read_image(os.path.join(images_dir, 'complexite_couleur.jpg'))
+    image = read_image(os.path.join(images_dir, 'test.png'))
     print 'Image size: ', image.shape[:2]
     k = 6
     print 'There are', k, 'clusters.'
     start = time.time()
-    cluster_maps, Ibs = k_means(image, k, iterations=50, epsilon=0)
+    cluster_maps, Ibs = k_means(image, k, iterations=5, epsilon=0)
     print '-->', time.time()-start, 'seconds'
     f, (ax1, ax2, ax3) = plt.subplots(1, 3)
     ax1.imshow(image)
     ax2.imshow(skimage.color.label2rgb(cluster_maps[-1]))
     ax2.set_title('K-means result for k =' + str(k))
-    ax3.plot(Ibs)
+    ax3.plot(Ibs[1:])
     ax3.set_title('Intra-class inertia Ib.')
     moviepy.editor.ImageSequenceClip(
-        [skimage.color.label2rgb(cm) for cm in cluster_maps],
+        [
+            skimage.img_as_ubyte(skimage.color.label2rgb(cm))
+            for cm in cluster_maps
+        ],
         fps=1
     ).write_videofile('k-means_iterations.mp4', fps=1)
     plt.show()
