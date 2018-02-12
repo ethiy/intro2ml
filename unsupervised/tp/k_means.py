@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 import skimage
 import skimage.io
 import skimage.color
@@ -15,6 +17,9 @@ import random
 import itertools
 
 import time
+
+
+images_dir = '../../resources/images/tp/unsupervised'
 
 
 def read_image(filename):
@@ -41,52 +46,42 @@ def distance(lhs, rhs):
 
 def initiate(image, k):
     init_indices, clusters = sample(image, k)
-    cluster_map = np.full(image.shape[:2], -1, dtype = np.int64)
+    cluster_map = np.full(image.shape[:2], -1, dtype=np.int64)
     for c, (i, j) in enumerate(init_indices):
         cluster_map[i, j] = c
     return (cluster_map, clusters)
 
 
-def update_pixel(i, j, cluster_map, image, clusters, cluster_cardinals):
-    ds = [distance(image[i, j], k) for k in clusters]
-    new = np.argmin(ds)
-    cluster_cardinals[new] += 1
-    clusters[new] = (clusters[new] * (cluster_cardinals[new] - 1) + image[i, j]) / cluster_cardinals[new]
-    if cluster_map[i, j] > -1:
-        clusters[cluster_map[i, j]] = (
-            (clusters[cluster_map[i, j]] * cluster_cardinals[cluster_map[i, j]]
-            -
-            image[i, j]) / (cluster_cardinals[cluster_map[i, j]] - 1)
-            if cluster_cardinals[cluster_map[i, j]] > 1 else 0
-        )
-        cluster_cardinals[cluster_map[i, j]] -= 1
-    return (
-        new,
-        cluster_cardinals,
-        clusters
+def assign_pixel(i, j, cluster_map, image, clusters):
+    cluster_map[i, j] = np.argmin(
+        [distance(image[i, j], center) for center in clusters]
     )
+    return cluster_map
 
 
-def update_pixels(image, clusters, cluster_cardinals, cluster_map):
-    l, w = image.shape[:2]
+def update_pixels(cluster_map, image, clusters):
+    l, w = cluster_map.shape
     for i, j in itertools.product(range(l), range(w)):
-        cluster_map[i, j], cluster_cardinals, clusters = update_pixel(
-            i,
-            j,
-            cluster_map,
+        cluster_map = assign_pixel(i, j, cluster_map, image, clusters)
+    clusters, cluster_cardinals = zip(
+        *[
+            (
+                barycenter(image[cluster_map == center]),
+                np.sum(cluster_map == center)
+            )
+            for center in range(len(clusters))
+        ]
+    )
+    print cluster_cardinals
+    print np.sum(cluster_cardinals) == l*w
+    return (
+        cluster_map,
+        clusters,
+        intra_inertia(
             image,
             clusters,
             cluster_cardinals
         )
-        if min(cluster_cardinals) <=0:
-            print cluster_cardinals
-            print clusters
-            plt.imshow(cluster_map)
-            plt.show()
-    return (
-        cluster_map,
-        clusters,
-        cluster_cardinals
     )
 
 
@@ -97,65 +92,46 @@ def barycenter(image):
 def intra_inertia(image, clusters, cluster_cardinals):
     g = barycenter(image)
     return sum(
-        [n * distance(gk, g) for n, gk in zip(cluster_cardinals, clusters)]
+        [nk * distance(gk, g) for nk, gk in zip(cluster_cardinals, clusters)]
     )
 
 
 def k_means(image, k, iterations=1, epsilon=0):
     cluster_map, clusters = initiate(image, k)
-    cluster_cardinals = k * [1]
-    if epsilon != 0:
-        cluster_maps = []
-        Ib = [float('inf')]
-        iteration = 1
-        while True:
-            cluster_map, clusters, cluster_cardinals = update_pixels(
-                    image,
-                    clusters,
-                    k * [1],
-                    cluster_map
-                )
-            cluster_maps.append(cluster_map)
-            Ib.append(intra_inertia(image, clusters, cluster_cardinals))
-            print '-> Iteration :', iteration
-            print '---> inertia :', Ib[-1]
-            iteration += 1
-            if abs(Ib[-2] - Ib[-1]) < epsilon:
-                break
-    cluster_maps = iterations * [None]
-    Ib = iterations * [None]
-    for iteration in range(iterations):
-        print clusters
-        print cluster_cardinals
-
-        cluster_map, clusters, cluster_cardinals = update_pixels(
+    iteration = 0
+    Ibs = [0]
+    cluster_maps = []
+    while True:
+        cluster_map, clusters, ib = update_pixels(
+            cluster_map,
             image,
-            clusters,
-            cluster_cardinals,
-            cluster_map
+            clusters
         )
-        cluster_maps[iteration] = cluster_map
-        Ib[iteration] = intra_inertia(image, clusters, cluster_cardinals)
-        print '-> Iteration :', iteration
-        print '---> inertia :', Ib[iteration]
-        print '---> population :', cluster_cardinals
-    return (cluster_maps, Ib)
+        iteration += 1
+        print clusters
+        print ib
+        cluster_maps.append(cluster_map)
+        Ibs.append(ib)
+        print '----> iteration: ', iteration
+        if iteration == iterations or abs(Ibs[-2] - Ibs[-1]) <= epsilon:
+            break
+    return (cluster_maps, Ibs)
 
 
 def main():
-    image = read_image('complexite.jpg')
+    image = read_image(os.path.join(images_dir, 'complexite_couleur.jpg'))
     print 'Image size: ', image.shape[:2]
-    k = 5
+    k = 6
     print 'There are', k, 'clusters.'
     start = time.time()
-    cluster_maps, Ib = k_means(image, k, iterations=2, epsilon=0)
+    cluster_maps, Ibs = k_means(image, k, iterations=50, epsilon=0)
     print '-->', time.time()-start, 'seconds'
-    f, (ax1, ax2) = plt.subplots(1, 2)
-    ax1.imshow(skimage.color.label2rgb(cluster_maps[-1]))
-    ax1.set_title('K-means result for k =' + str(k))
-    ax2.plot(Ib)
-    ax2.set_yscale('log')
-    ax2.set_title('Intra-class inertia Ib.')
+    f, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    ax1.imshow(image)
+    ax2.imshow(skimage.color.label2rgb(cluster_maps[-1]))
+    ax2.set_title('K-means result for k =' + str(k))
+    ax3.plot(Ibs)
+    ax3.set_title('Intra-class inertia Ib.')
     moviepy.editor.ImageSequenceClip(
         [skimage.color.label2rgb(cm) for cm in cluster_maps],
         fps=1
