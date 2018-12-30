@@ -30,18 +30,17 @@
 	\end{frame}
 
 	\section{Introduction}
-
-		\begin{frame}{Classer: première définition}
-			Champs lexical
+		\begin{frame}{Classification: première définition}
+			Champs lexical de classer:
 			\begin{itemize}
 				\item<2-> ranger,
 				\item<3-> labeliser,
 				\item<4-> catégoriser,
 				\item<5-> hiérarchiser.
 			\end{itemize}
-			\only<6->{
+			\uncover<6->{
 				\begin{block}{Esquisse de définition}
-					Classer: ranger $n$ \textbf{objets} dans $k$ \textbf{catégories} (avec $k << n$).
+					Classer: ranger \(n\) \textbf{objets} dans \(k\) \textbf{catégories} (avec \(k \ll n\)).
 				\end{block}
 			}
 		\end{frame}
@@ -52,102 +51,200 @@
 					\item<2-> Comment sont-elle définit les catégories (ou classes) d'objets?
 			\end{itemize}
 		\end{frame}
-
-		\begin{frame}{Exemples de problèmes de classification}
-			\begin{figure}[H]
-				\includegraphics[width=.7\textwidth]{images/samples/image_datasets}
-				\caption*{\tiny Exemples de base de données d'images~\cite{ahmed2017fusion}.}
-			\end{figure}
-		\end{frame}
-		
-		\begin{frame}{Exemples de problèmes de classification}
-			\begin{figure}[H]
-				\ffigbox[\FBwidth]
-				{
-					\begin{subfloatrow}[2]
-						\ffigbox[\FBwidth]
-						{
-							\includegraphics[width=.31\textwidth]{images/samples/gironde}
-						}
-						{
-							\caption*{\tiny Image de la Gironde prise par SPOT en 2016: Résolution $1.5m$, $4$ canaux: \{{\color{purple!20}Infrarouge}, {\color{red}Rouge}, {\color{green}Vert}, {\color{blue}Bleu}\}.}
-						}
-						\ffigbox[\FBwidth]
-						{
-							\includegraphics[width=.31\textwidth]{images/samples/gironde_classif}
-						}
-						{
-							\caption*{\tiny Occupation des sols extraite de l'image: {\color{red}$\blacksquare$} Bâti, {\color{green}$\blacksquare$} Forêt, {\color{yellow}$\blacksquare$} Culture, {\color{gray}$\blacksquare$} Routes, {\color{blue}$\blacksquare$} Eau.}
-						}
-					\end{subfloatrow}
-				}
-				{
-					\caption*{\tiny Classification appliquée pour l'Occupation des sols~\cite{postadjian2017investigating}.}
-				}
-			\end{figure}
-		\end{frame}
-
-		\begin{frame}{Exemples de problèmes de classification}
-			\begin{figure}[H]
-				\includegraphics[width=.6\textwidth]{images/samples/pc_classification}
-				\caption*{\tiny Exemple de classification de nuage de point\cite{landrieu2017structured}.}
-			\end{figure}
-		\end{frame}
-
-		\begin{frame}{Exemples de problèmes de classification}
-			\begin{figure}[H]
-				\includegraphics[width=.65\textwidth]{images/samples/traffic_paris}
-				\caption*{\tiny Exemple de classification utilisé pour déterminer les conditions de circulation à Paris le 06/09/2016 à 9:30~\cite{tutic2016google}.}
-			\end{figure}
-		\end{frame}
-
-		\begin{frame}{Exemples de problèmes de classification}
-			\begin{figure}[H]
-				\includegraphics[width=.45\textwidth]{images/samples/radar}
-				\caption*{\tiny Exemple d'occupation de sol utilisant basée RADAR~\cite{EsaRadar}.}
-			\end{figure}
-		\end{frame}
-
-		\begin{frame}{Comment caractériser les observations?}
-			\begin{itemize}
-				\item<1-> Comment sont représentés les données à classer?
-				\item<2-> Quel est le point commun entre ces observations?
-			\end{itemize}
-		\end{frame}
-
-		\begin{frame}{Observations}
-			Les observations peuvent prendre beaucoup de formes:
-			\begin{itemize}
-				\item<2-> Image;
-				\item<3-> Série temporelle (son, vidéo \dots);
-				\item<4-> Graph de données;
-				\item<5-> Nuage de points (LIDAR par exemple).
-			\end{itemize}
-		\end{frame}
-
-		\begin{frame}{Représentation mathématique}
-			\begin{frame}
-				\item<1-> 
+	
+	\section{Classification}
+		\subsection{Exemples}
+			\begin{frame}{Reconaissance d'objet}
+				\begin{figure}[H]
+					\includegraphics[width=.7\textwidth]{images/samples/image_datasets}
+					\caption*{\tiny Exemples de base de données d'images~\cite{ahmed2017fusion}.}
+				\end{figure}
 			\end{frame}
-		\end{frame}
+			
+			\begin{frame}{Occupation du sol}
+				\begin{figure}[H]
+					\ffigbox[\FBwidth]
+					{
+						\begin{subfloatrow}[2]
+							\ffigbox[\FBwidth]
+							{
+								\includegraphics[width=.31\textwidth]{images/samples/gironde}
+							}
+							{
+								\caption*{\tiny Image de la Gironde prise par SPOT en 2016: Résolution 1.5m, 4 canaux: \{{\color{purple!20}Infrarouge}, {\color{red}Rouge}, {\color{green}Vert}, {\color{blue}Bleu}\}.}
+							}
+							\ffigbox[\FBwidth]
+							{
+								\includegraphics[width=.31\textwidth]{images/samples/gironde_classif}
+							}
+							{
+								\caption*{\tiny Occupation des sols extraite de l'image: {\color{red}\(\blacksquare\)} Bâti, {\color{green}\(\blacksquare\)} Forêt, {\color{yellow}\(\blacksquare\)} Culture, {\color{gray}\(\blacksquare\)} Routes, {\color{blue}\(\blacksquare\)} Eau.}
+							}
+						\end{subfloatrow}
+					}
+					{
+						\caption*{\tiny Classification appliquée pour l'Occupation des sols~\cite{postadjian2017investigating}.}
+					}
+				\end{figure}
+			\end{frame}
 
+			\begin{frame}{Segmentation de nuage de points}
+				\begin{figure}[H]
+					\includegraphics[width=.6\textwidth]{images/samples/pc_classification}
+					\caption*{\tiny Exemple de classification de nuage de point\cite{landrieu2017structured}.}
+				\end{figure}
+			\end{frame}
 
-	% \begin{frame}{Rappel: Classification supervisée}
-	% 	\begin{figure}[H]
-	% 		\begin{center}
-	% 			\includestandalone[mode=buildnew, height=.4\textheight]{scatter_gender_dataset}
-	% 			\caption*{\tiny Exemple de problème de classification: $2$ attributs et $2$ classes.}
-	% 		\end{center}
-	% 	\end{figure}
-	% 	\begin{itemize}
-	% 		\item <1-> On observe $n$ échantillons: $\big((X^i, Y^i)\big)_{i=1,\dots,n}$
-	% 		\item <2-> Connaissant une instance $X^j = \begin{pmatrix}
-	% 		X_1^j\\
-	% 		\vdots \\
-	% 		X_d^j
-	% 		\end{pmatrix}$, il faut prédire sa classe $Y^j$ et la probabilité de cette classe.
-	% 	\end{itemize}
-	% \end{frame}
+			\begin{frame}{Détection de phénomènes}
+				\begin{figure}[H]
+					\includegraphics[width=.65\textwidth]{images/samples/traffic_paris}
+					\caption*{\tiny Exemple de classification utilisé pour déterminer les conditions de circulation à Paris le 06/09/2016 à 9:30~\cite{tutic2016google}.}
+				\end{figure}
+			\end{frame}
+
+			\begin{frame}{Classification avec RADAR}
+				\begin{figure}[H]
+					\includegraphics[width=.45\textwidth]{images/samples/radar}
+					\caption*{\tiny Exemple d'occupation de sol utilisant basée RADAR~\cite{EsaRadar}.}
+				\end{figure}
+			\end{frame}
+
+		\subsection{Observations}
+			\begin{frame}{Comment caractériser les observations?}
+				\begin{itemize}
+					\item<1-> Comment sont représentés les données à classer?
+					\item<2-> Quel est le point commun entre ces observations?
+				\end{itemize}
+			\end{frame}
+		
+			\begin{frame}{Observations}
+				Les observations peuvent prendre beaucoup de formes:
+				\begin{itemize}
+					\item<2-> Image;
+					\item<3-> Série temporelle (son, vidéo \dots);
+					\item<4-> Graph de données;
+					\item<5-> Nuage de points (LIDAR par exemple).
+				\end{itemize}
+			\end{frame}
+
+			\begin{frame}{Attributs: représentation vectorielle}
+				\begin{itemize}
+					\item<1-> On représente généralement les observables par un vecteur dans \(\mathbb{R}^d\) qu'on nome attributs.
+					\item<2-> On notera la \(i\)-ème observation par \(X^i = \begin{pmatrix}
+						X^i_1\\
+						X^i_2\\
+						\vdots\\
+						X^i_d
+					\end{pmatrix}\).
+					\item<3-> On notera donc l'ensemble des observations par \(\big( X^i \big)_{i=1,\dots, n}\).
+				\end{itemize}
+			\end{frame}
+
+		\subsection{Types d'apprentissage}
+			\begin{frame}{Apprentissage: supervisé et non-supervisé}
+				Les classes peuvent être:
+				\begin{itemize}
+					\item<2-> non définies \(\longrightarrow\) apprentissage non-supervisé;
+					\item<3-> définies \(\longrightarrow\) apprentissage (ou classification) supervisé.
+				\end{itemize}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				Dans le cas supervisé:
+				\begin{itemize}
+					\item<1-> Des classes sont définis \textit{a priori}: \(\{1,\dots, C\}\);
+					\item<2-> Les observations sont divisée en deux ensembles:
+						\begin{itemize}
+							\item<3-> L'ensemble d'entraînement: chaque observation \(X^i, i=1,\dots,n_{train}\) a une classe \(Y^i \in \{1,\dots, C\}\);
+							\item<4-> L'ensemble de test: des observations \(X^i, i=n_{train},\dots,n\) pour lesquels les classes \(Y^i, i=n_{train},\dots,n\) sont inconnues.
+						\end{itemize}
+					\item<5-> On ``apprend'' un modèle sur l'ensemble d'entraînement afin de prédire les classes \(Y^i, i=n_{train},\dots,n\) à partir des attributs \(X^i, i=n_{train},\dots,n\) seulement.
+				\end{itemize}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				\begin{figure}[H]
+					\includegraphics[height=.55\textheight]{images/samples/shapes_supervised}
+					\caption*{Exemple de problème d'apprentissage supervisé: les classes (formes géométriques) sont données.}
+				\end{figure}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				Comment décrire les observations en forme de vecteur?
+				\begin{itemize}
+					\item<2-> nombre de côtés;
+					\item<3-> nombre de sommets;
+					\item<4-> convexité;
+					\item<5-> symmetrie par rotation;
+					\item<6-> \dots;
+				\end{itemize}
+				\uncover<7->{
+					Pour une observation, dont la forme (classe) est un carré, le vecteur d'attributs s'écrit:
+					\[\begin{pmatrix}
+						4\\
+						4\\
+						True\\
+						False\\
+						\vdots
+					\end{pmatrix}\]
+				}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				\begin{figure}[H]
+					\begin{center}
+						\includestandalone[mode=buildnew, height=.5\textheight]{scatter_gender_dataset}
+						\caption*{\tiny Exemple de problème de classification supervisé: 2 attributs et 2 classes.}
+					\end{center}
+				\end{figure}
+			\end{frame}
+
+			\begin{frame}{Apprentissage non-supervisé}
+				\begin{itemize}
+					\item<1-> Dans le cas de l'apprentissage non-supervisé, on n'observe que les objets à classer, représentés par leurs attributs \(\big(X^i\big)_{i=1,\dots, n}\);
+					\item<2-> Le but est de regrouper les instances qui se ``ressemblent'' en un seul cluster;
+					\item<3-> La ressemblance est basée sur les distances dans l'espace des attributs.
+				\end{itemize}
+			\end{frame}
+
+			\begin{frame}{Apprentissage non-supervisé}
+				\begin{figure}[H]
+					\includegraphics[height=.6\textheight]{images/samples/easter_non_supervised}
+					\caption*{Exemple de problématique d'apprentissage non-supervisé.}
+				\end{figure}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				Comment décrire les observations en forme de vecteur?
+				\begin{itemize}
+					\item<2-> nombre de côté du motif régulier;
+					\item<3-> couleur rouge;
+					\item<4-> couleur verte;
+					\item<5-> couleur blanche;
+					\item<6-> couleur bleue;
+					\item<7-> couleur jaune;
+					\item<8-> couleur orange;
+					\item<9-> convexité du motif;
+					\item<10-> symmetrie par rotation du motif;
+					\item<11-> symmetrie par translation du motif;
+					\item<12-> \dots;
+				\end{itemize}
+				\uncover<13->{
+					Pour l'instance en haut à droite, le vecteur d'attributs s'écrit:
+					\[\begin{pmatrix}
+						5 & 1 & 1 & 1 & 0 & 0 & 0 & False & False & False \dots
+					\end{pmatrix}^T\]
+				}
+			\end{frame}
+
+			\begin{frame}{Apprentissage non-supervisé}
+				\begin{figure}[H]
+					\begin{center}
+						\includestandalone[mode=buildnew, height=.5\textheight]{scatter_circles}
+						\caption*{\tiny Exemple de problème non-supervisé: 2 attributs. Les classes ne sont pas données mais une structure se dégage.}
+					\end{center}
+				\end{figure}
+			\end{frame}
 
 	% \begin{frame}{Supervisé vs Non-Supervisée}
 	% 	\begin{figure}[H]
