@@ -11,6 +11,8 @@
 \usepackage{floatrow}
 \captionsetup{labelsep=period}
 
+\usepackage[]{algorithm2e}
+
 \usepackage{standalone}
 
 \usepackage{amssymb, amsmath, mathrsfs, mathtools, dsfont, bbold}
@@ -202,8 +204,13 @@
 			\begin{frame}{Apprentissage non-supervisé}
 				\begin{itemize}
 					\item<1-> Dans le cas de l'apprentissage non-supervisé, on n'observe que les objets à classer, représentés par leurs attributs \(\big(X^i\big)_{i=1,\dots, n}\);
-					\item<2-> Le but est de regrouper les instances qui se ``ressemblent'' en un seul cluster;
-					\item<3-> La ressemblance est basée sur les distances dans l'espace des attributs.
+					\item<2-> Le but est de partitionner les instances en groupes (ou clusters) homgènes se ``ressemblent'' en un seul cluster;
+					\item<3-> La ressemblance est basée sur les distances dans l'espace des attributs;
+					\item<4-> La partition guarantie:
+						\begin{itemize}
+							\item<5-> des distances faibles intra-cluster;
+							\item<6-> des distances grandes intra-cluster.
+						\end{itemize}
 				\end{itemize}
 			\end{frame}
 
@@ -246,240 +253,141 @@
 				\end{figure}
 			\end{frame}
 
-	% \begin{frame}{Supervisé vs Non-Supervisée}
-	% 	\begin{figure}[H]
-	% 		\begin{center}
-	% 			\includestandalone[mode=buildnew, height=.4\textheight]{scatter_circles}
-	% 			\caption*{\tiny Exemple de problème de classification non supervisée: Pas de classes mais une structure se dégage.}
-	% 		\end{center}
-	% 	\end{figure}
-	% 	\begin{itemize}
-	% 		\item <1-> On observe ${(X^i)}_{i=1,\dots,n}$ sans les classes $\longrightarrow$ non supervisée,
-	% 		\item <2-> On observe ${\big((X^i, Y^i)\big)}_{i=1,\dots,n}$ $\longrightarrow$ supervisée.
-	% 	\end{itemize}
-	% \end{frame}
+			\begin{frame}{Apprentissage non-supervisé}
+				\begin{figure}[H]
+					\begin{center}
+						\includegraphics[height=.5\textheight]{images/samples/superpixels}
+						\caption*{\tiny Exemple de problème non-supervisé: super-pixelisation d'une image~\cite{achanta2012slic}.}
+					\end{center}
+				\end{figure}
+			\end{frame}
+	\section{Algorithmes non-supervisé}
+		\subsection{L'inertie}
+			\begin{frame}{Disparité intra-cluster}
+				\begin{itemize}
+					\item<1-> Soit \(\big(S_k\big)_{k = 1, \dots, K}\) une \(K\)-partition de \(\{1, 2, \dots, n\}\).
+					\item<2-> Pour chaque sous-ensemble \(S_k\), on définit la quantité \(\sum_{i\in S_k} d(X^i, \mu_k)^2\) où:
+						\begin{itemize}
+							\item<3-> \(d: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}_+\) représente une distance: ex. \(d(x, y) = \lVert x - y \rVert\);
+							\item<3-> \(\mu_k\) est le barycentre de \(S_k\): \( \mu_k \triangleq \frac{1}{\vert S_k \vert}.\sum_{i\in S_k} X^i\).
+						\end{itemize}
+					\item<4-> Cette quantité exprime la disparité intra-cluster.
+				\end{itemize}
+			\end{frame}
 
-	% \begin{frame}{Discriminatif vs Génératif}
-	% 	On suppose que ${\big((X^i, Y^i)\big)}_{i=1,\dots,n}$ sont des réalisations indépendantes et identiquement distribuées (i.i.d) de la loi $\mathbb{P}(X=x, Y=y) = p(x,y)$.
-	% 	\begin{itemize}
-	% 		\only<1-5>{
-	% 			\item <1-> On sait modéliser la distribution des classes $p(y)$ et celle des instances selon la classe $p(x\vert y)$ $\longrightarrow$ méthode générative,
-	% 			\begin{itemize}
-	% 				\item <2-> Exemple: On s'interresse à la detection de sexe selon deux mesures: taille et poids.
-	% 				\item <3-> On suppose que la répartition des sexes est équilibrée dans le monde $p(y=1) = p(y=0) = \frac{1}{2}$ et que et que la répartition des mesures suivent des lois gaussiennes $X\vert Y \sim \mathscr{N}(m_y, \sigma_y)$;
-	% 				\item <4-> On infère la probabilité $p(y \vert x) = \frac{p(x\vert y). p(y)}{p(x)}$.
-	% 				\item <5-> On choisit la plus probable: $\arg \max_{y} p(y \vert x)$.
-	% 			\end{itemize}
-	% 		}
-	% 		\only<6-7>{
-	% 			\item <6-> On n'a aucune connaissance \textit{a priori}. On cherche à apprendre un modèle de $p(y \vert x)$ $\longrightarrow$ méthode discriminative,
-	% 			\begin{itemize}
-	% 				\item <7-> Exemple: On apprend un modèle d'arbres aléatoires.
-	% 			\end{itemize}
-	% 		}
-	% 	\end{itemize}
-	% \end{frame}
+			\begin{frame}{Inertie intraclasse}
+				\begin{itemize}
+					\item<1-> On somme les différentes disparités intra-cluster sur tout les sous-ensembles \(S_k\). On définit l'inertie intraclasse de la partition:
+						\begin{equation}
+							I_W(\big(S_k\big)_{k = 1, \dots, K}) \triangleq \sum_{k= 1}^{K} \sum_{i\in S_k} d(X^i, \mu_k)^2
+						\end{equation}
+					\item<2-> Pour le cas particulier de \(K=1\), on vérifie \(\big(S_k\big)_{k = 1, \dots, K} = (\{1,\dots,n\})\). On définit donc l'inertie totale des instances:
+						\begin{equation}
+							I_T \triangleq \sum_{i=1}^{n} d(X^i, \mu)^2
+						\end{equation}
+						avec \(\mu = \frac{1}{n} . \sum_{i=1}^{n} X^i\).
+				\end{itemize}
+			\end{frame}
 
-	% \begin{frame}{Pourquoi classifier?}
-	% 	
-	% \end{frame}
+			\begin{frame}[allowframebreaks]{Inertie totale}
+				\begin{align*}
+					I_T &= \sum_{i=1}^{n} \lVert X^i - \mu \rVert^2\\
+						&= \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu \rVert^2\\
+						&= \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu_k \rVert^2 + \lVert \mu_k - \mu \rVert^2 + 2. \langle X^i-\mu_k, \mu_k-\mu \rangle\\
+						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \sum_{i\in S_k} \langle X^i-\mu_k, \mu_k-\mu \rangle\\
+						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \sum_{i\in S_k} (X^i-\mu_k), \mu_k-\mu \rangle
+				\end{align*}
+				\begin{align*}
+					I_T &= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \sum_{i\in S_k} X^i - \vert S_k \vert . \mu_k, \mu_k-\mu \rangle\\
+						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \sum_{i\in S_k} X^i - \vert S_k \vert . \frac{1}{\vert S_k \vert} . \sum_{i\in S_k} X^i, \mu_k-\mu \rangle\\
+						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2
+				\end{align*}
+			\end{frame}
 
+			\begin{frame}{Inertie interclasse}
+				\begin{itemize}
+					\item<1-> On définit ainsi l'inertie interclasse:
+						\begin{equation}
+							I_B(\big(S_k\big)_{k = 1, \dots, K}) = \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2
+						\end{equation}
+						on a donc:
+						\begin{equation}
+							I_T = I_B(\big(S_k\big)_{k = 1, \dots, K}) + I_W(\big(S_k\big)_{k = 1, \dots, K})
+						\end{equation}
+					\item<2-> Cette quantité exprime la disparité entre les barycentre de cluster et le barycentre de tous les échantillons. Plus elle est grande, plus l'hétérogénité de la partition est grande.
+					\item<3-> Puisque \(I_T\) est constante, minimiser la disparité intra-cluster \(I_W\) revient à maximiser \(I_B\).
+					\item<4-> Trouver la meilleure partition revient à résoudre le problème:
+						\begin{equation}
+							\arg \min_{\substack{K = 1,\dots,n \\ \big(S_k\big)_{k = 1, \dots, K}}} I_W(\big(S_k\big)_{k = 1, \dots, K})
+						\end{equation}
+				\end{itemize}
+			\end{frame}
 
-	% \section[SVM]{SVM}
-	% \begin{frame}{Curse of dimensionality}
-	% 	\begin{itemize}
-	% 		\item <1-> Si on a $n$ points à séparer, sans aucun modèle de classification, il y a un nombre exponentiel de séparations $ \frac{\vert \mathscr{P}(\{1,\dots,n\}) \vert}{2} = 2^{n-1}$ possibles $\longrightarrow$ C'est incalculable.
-	% 		\item <2-> Il faut donc un modèle de séparation qui permettra de chercher efficacement une bonne solution: Forêts Aléatoires, \textbf{SVM}, Réseaux de Neurones \dots
-	% 	\end{itemize}
-	% \end{frame}
-	% \subsection{Un peu de théorie}
-	% 	\begin{frame}{Régresser sur les probabilité: fausse bonne idée.}
-	% 		\begin{itemize}
-	% 			\item<1-> On impose un modèle de probabilité $p(y\vert x)$.
-	% 				\begin{itemize}
-	% 					\item régression de densité parametrique: Bernoulli, Poisson \dots;
-	% 					\item régression de densité non-parametrique.
-	% 				\end{itemize}
-	% 			\item<2-> \textcolor{red}{Problème: on impose trop d'hypothèses contraignantes.}
-	% 			\item<3-> Comment faire? Quels types d'hypothèse à choisir?
-	% 		\end{itemize}
-	% 	\end{frame}
-	% 	\begin{frame}{Formalisation: fonction de décision}
-	% 		\begin{itemize}
-	% 			\item<1-> On se place dans le cas de classification binaire:
-	% 				$$ X^i \in \mathbb{R}^d , \quad \forall i=1,\dots,n$$
-	% 				$$ Y^i \in \{-1, +1\} , \quad \forall i=1,\dots,n$$
-	% 				$$\eta(x) = p(y = 1 \vert x) = 1 - p(y = -1 \vert x), \quad \forall x \in \mathbb{R}^d$$
-	% 			\item<2-> On cherche une fonction de décision $D$ comme suit:
-	% 			\begin{align*}
-	% 				D: \mathbb{R}^d &\rightarrow \{-1, +1\} \\
-	% 				x &\mapsto D(x)
-	% 			\end{align*}
-	% 			\item<3-> On définit le regret, ou risque, d'une fonction de décision $D$ par:
-	% 			\begin{equation}
-	% 				R(D) \triangleq \mathbb{E}_{X,Y}(\mathbb{1}(D(X)\neq Y))
-	% 			\end{equation}
-	% 			\item<4-> Cette fonction calcule la mesure de l'espace d'attributs où $D(x) \neq y$:
-	% 			\begin{align*}
-	% 				R(D) &= \mathbb{P}(\{D(X)\neq Y\})\\
-	% 					 &= \sum_{y\in \{-1, 1\}} \int_{x \in \mathbb{R}^d} \mathbb{1}(D(x)\neq y) p(dx, y)
-	% 			\end{align*}
-	% 		\end{itemize}
-	% 	\end{frame}
-	% 	\begin{frame}{Fonction de décision optimal}
-	% 		\begin{itemize}
-	% 			\item<1-> Le "décideur" optimal $D^*$ donne le regret $R(D^*)$ minimal:
-	% 				  \begin{equation}
-	% 					  D^* \triangleq \arg \min_{D} R(D) 
-	% 				  \end{equation}
-	% 			\item<2-> On appelle cette fonction la fonction de décision de Bayes. On prouve que:
-	% 				  \begin{equation}
-	% 					D^*(x) \triangleq 2.\mathbb{1}(\eta(x) > \frac{1}{2}) - 1
-	% 				  \end{equation}
-	% 			\item<3-> En pratique, on ne connait pas $\eta: \mathbb{R}^d \rightarrow [0,1]$.
-	% 		\end{itemize}
-	% 	\end{frame}
+			\begin{frame}{Combinatoire}
+				\begin{itemize}
+					\item<1-> A premier abord, on peut essayer toutes les partitions possibles.
+					\item<2-> Pour \(n\) instances et \(K\) classes, le nombre totale de partition~\cite{StirlingWiki}:
+						\begin{equation}
+							S_{n,K} \triangleq \left\{ {n \atop k}\right\} = \frac{1}{k!}\sum_{j=0}^{k} (-1)^{k-j} \binom{k}{j} j^n
+						\end{equation}
+					\item<3-> Pour \(k \neq 1, n\):
+						\begin{equation}
+							S_{n,K} \underset{n\infty}{\sim} \frac{K^n}{K!}
+						\end{equation}
+					\item<4-> Pour toute les partitions possibles, on dénombre:
+						\begin{equation}
+							B_n \triangleq \sum_{k=0}^n \left\{ {n \atop k}\right\} = \frac{1}{e}\sum_{k\in\mathbb{N}} \frac{k^n}{k!}
+						\end{equation}
+						avec: \(\frac{B_n}{n^n} \underset{n\infty}{\sim} 1\)~\cite{BellWiki}.
+				\end{itemize}
+			\end{frame}
+		\subsection{Clustering hiérarchique}
+			\begin{frame}{Clustering hiérarchique}
+				\begin{itemize}
+					\item<1-> On repose sur la métrique \(d\) qui repose sur la géométrie dans l'espace des attributs.
+					\item<2-> On définit une distance entre clusters:
+						\begin{itemize}
+							\item<3-> \(D_m: (A, B) \mapsto \min_{a\in A, b\in B} d(a,b)\)
+							\item<4-> \(D_M: (A, B) \mapsto \max_{a\in A, b\in B} d(a,b)\)
+							\item<5-> \(D_b: (A, B) \mapsto \frac{1}{\vert A \vert.\vert B \vert}\sum_{a\in A, b\in B} d(a,b)\)
+							\item<6-> \dots
+						\end{itemize}
+					\item<7-> On regroupe (\textit{resp.} divise) les clusters qui vérifient le minimum (\textit{resp.} maximum) de distance~\cite{hastie2009unsupervised,ward1963hierarchical}.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Algorithme}
+				\begin{algorithm}[H]
+					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
+					\KwData{La métrique de l'espace: \(d: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}_+\)}
+					\KwData{La métrique de cluster: \(D: 2^{\{X^i: i=1,\dots,n\}} \times 2^{\{X^i: i=1,\dots,n\}} \rightarrow \mathbb{R}_+\)}
+					\KwData{Le nombre d'itération maximale: \(I\)}
+					\KwData{Le nombre de cluster: \(K\)}
+					
+					\KwResult{La partition: \(\big(S_k\big)_{k=1,\dots,K}\)}
+					\(i = 0\), \(S^i_k:=\{X^k\}, \quad \forall k = 1,\dots,n\), \(cl=n\)\;
+					\While{\(cl > K\) and \(i < I\)}{
+						\(i := i + 1\)\;
+						\(\big\{c_1, \dots, c_{p_i}\big\} := \arg\min_{\substack{s=1,\dots,cl\\t=1,\dots,cl}} D(S^{i-1}_s, S^{i-1}_t)\)\;
+						\(\{e_1,\dots,e_{q_i}\} := \big\{\bigcup_{\substack{k=1,\dots,p_i\\c_j\cup c_k \neq \emptyset}} c_k: j=1,\dots,p_i\big\}\)\;
+						\(\forall k=1,\dots,q_i \quad S^i_k := \bigcup_{j\in e_k} S^{i-1}_j\)\;
+						\(\big\{S^i_k: k=q_i+1,\dots,cl\} := \{S^{i-1}_h: h\in\{1,\dots,cl\} \setminus \bigcup_{j=1}^{q_i} e_j \big\}\)\;
+						\(cl:= cl + q_i - \sum_{j=1}^{q_i} \vert e_i\vert\)\;
+					}
+				\end{algorithm}
+			\end{frame}
 
-	% 	\begin{frame}{Apprentissage de séparateur}
-	% 		\begin{itemize}
-	% 			\item<1-> On évite de modéliser $\eta$ sur tout l'espace d'attributs $\mathbb{R}^d$.
-	% 			\item<2-> Il est plus judicieux de modèliser $\eta$ sur les points $x$ où:
-	% 					\begin{equation*}
-	% 						\eta(x) = \frac{1}{2}
-	% 					\end{equation*}
-	% 			\item<3->  Cela revient à étudier ce qu'on appelle un séparateur; i.e. la courbe qui vérifie:
-	% 				\begin{equation}
-	% 					\mathscr{S}_{binary} \triangleq \{X \in \mathbb{R}^d: \eta(x) = \frac{1}{2} \}
-	% 				\end{equation}
-	% 		\end{itemize}
-	% 	\end{frame}
+			\begin{frame}{Exemple}
+				\begin{figure}[H]
+					\includegraphics[width=.8\textwidth]{images/samples/hierchical_clustering.png}
+					\caption*{Exemple de clustering hiérarchique}
+				\end{figure}
+			\end{frame}
+		\subsection{Clustering avec partitionnement}
 
-	% 	\begin{frame}{Séparateur: illustration}
-	% 		\begin{figure}[H]
-	% 			\includestandalone[mode=buildnew, width=.5\textwidth]{scatter_separators}
-	% 			\caption*{\tiny Séparateurs possibles des données. $\mathscr{S}_1$ est un exemple de séparateur courbe alors que $\mathscr{S}_2$ est un séparateur linéaire.}
-	% 		\end{figure}
-	% 	\end{frame}
-
-	% 	\begin{frame}{Choix du séparateur}
-	% 		\begin{itemize}
-	% 			\item  Il y a une infinité de modèle de $D$ possible.
-	% 			\item  Un choix naïf serait de donner, pour chaque instance d'entraînement $X^i$, la valeur qui lui est associé $Y^i$, et pour toute autre valeur $x$ une classe de façon aléatoire:
-	% 			\begin{equation*}
-	% 				D_n(x) = \sum_{i=1,\dots,n} Y^i . \delta_{X^i}(x) + b . \mathbb{1}_{x \notin \{X^i, \forall i=1,\dots,n\}}
-	% 			\end{equation*}
-	% 			où: $b \sim \mathscr{B}(0.5)$ est une valeur aléatoire qui suit une loi de Bernoulli avec paramètre $0.5$.
-	% 			\item Cependant, ce classifieur n'a aucun pourvoir de généralisation. En effet:
-	% 			\begin{gather*}
-	% 				\widetilde{x} := \sum_{i=1,\dots,n} X^i \notin \{X^i, \forall i=1,\dots,n\} \\
-	% 				\Rightarrow D_n(\widetilde{x}) \sim \mathscr{B}(0.5)
-	% 			\end{gather*}
-	% 			\item  On réduit, dans le cadre du cours, le choix des séparateurs à ceux qui sont linéaires:
-	% 			\begin{align*}
-	% 				D_{\textbf{w}, b}: \mathbb{R}^d &\rightarrow \{-1, +1\} \\
-	% 				\textbf{x} &\mapsto D_{\textbf{w}, b}(\textbf{x}) = 2.\mathbb{1}(\textbf{w}.\textbf{x} + b > 0) - 1
-	% 			\end{align*}
-	% 		\end{itemize}
-	% 	\end{frame}
-
-	% \subsection[linear]{SVM linéaire}
-	% 	\begin{frame}{Mais c'est quoi donc ce SVM?}
-	% 		\begin{itemize}
-	% 			\item  SVM\@: Support Vector Machines.
-	% 			\item  C'est quoi donc un vecteur support?
-	% 			\item  Quelle est la relation avec les séparateurs linéaires?
-	% 		\end{itemize}
-	% 	\end{frame}
-
-	% 	\begin{frame}{SVM\@: maximiser la marge.}
-	% 		\begin{figure}[H]
-	% 			\includegraphics[width=\textwidth]{images/samples/svm}
-	% 			\caption*{ Le séparateur linéaire SVM.}
-	% 		\end{figure}
-	% 	\end{frame}
-
-	% 	\begin{frame}{SVM\@: maximiser la marge.}
-	% 		\begin{itemize}
-	% 			\item  Le but du SVM est de maximiser la marge~\cite{vapnik1998statistical}.
-	% 			\item  On remarque que:
-	% 			\begin{gather*}
-	% 				(\textbf{w}, b) \in \{\omega \in \mathbb{R}^d : \omega.\textbf{x} + b = 0\} \\
-	% 				\Rightarrow
-	% 				(\lambda . \textbf{w}, \lambda.b) \in \{\omega \in \mathbb{R}^d : \omega.\textbf{x} + b = 0\}\quad, \forall \lambda \in \mathbb{R}\setminus\{0\}
-	% 			\end{gather*}
-	% 			\item  Il y a donc une infinité de solutions possibles. On prend donc la solution $\textbf{w}$ qui permet d'avoir:
-	% 			\begin{align}
-	% 				\textbf{w}.\textbf{x}_{\color{blue}+} + b &= {\color{blue}+}1 \\
-	% 				\textbf{w}.\textbf{x}_{\color{red}-} + b &= {\color{red}-}1
-	% 			\end{align}
-	% 			où:
-	% 			\begin{itemize}
-	% 				\item[{\color{blue}+}] $\textbf{x}_{\color{blue}+}$ correspond aux vecteurs supports positifs (i.e. $Y={\color{blue}+}1$).
-	% 				\item[{\color{red}---}] $\textbf{x}_{\color{red}-}$ correspond aux vecteurs supports négatifs (i.e. $Y={\color{red}-}1$).
-	% 			\end{itemize}
-	% 		\end{itemize}
-	% 	\end{frame}
-
-	% 	\begin{frame}[plain]{SVM\@: maximiser la marge}
-	% 		\begin{figure}[H]
-	% 			\includestandalone[mode=buildnew, width=.75\textwidth]{svm_separable}
-	% 			\caption*{\tiny Le séparateur linéaire SVM.}
-	% 		\end{figure}
-	% 	\end{frame}
-
-	% 	\begin{frame}{La marge}
-	% 		\begin{itemize}
-	% 			\only<1>{
-	% 				\item  La marge est la longueur de la projection orthogonal de $(\textbf{x}_+ - \textbf{x}_-)$ sur la droite porter par $\textbf{w}$:
-	% 					\begin{align*}
-	% 					M &= \frac{\textbf{w}}{\vert\vert \textbf{w} \vert\vert}.(\textbf{x}_+ - \textbf{x}_-) \\
-	% 					&= \frac{\textbf{w}.\textbf{x}_+ - \textbf{w}.\textbf{x}_-}{\vert\vert \textbf{w} \vert\vert}\\
-	% 					&= \frac{\textbf{w}.\textbf{x}_+ + b - (\textbf{w}.\textbf{x}_- + b)}{\vert\vert \textbf{w} \vert\vert}\\
-	% 					&= \frac{2}{\vert\vert \textbf{w} \vert\vert}
-	% 					\end{align*}
-	% 			}
-	% 			\item<2-> La marge est la longueur de la projection orthogonal de $(\textbf{x}_+ - \textbf{x}_-)$ sur la droite porter par $\textbf{w}$:
-	% 				\begin{equation}
-	% 					M = \frac{2}{\vert\vert \textbf{w} \vert\vert}
-	% 				\end{equation}
-	% 			\item<2->  Le problème posé par le SVM est donc formulé comme suit:
-	% 			\begin{equation}
-	% 				\begin{aligned}
-	% 				& \max_{\textbf{w}}
-	% 				& & \frac{2}{\vert\vert \textbf{w} \vert\vert} \\
-	% 				& \text{sous contrainte}
-	% 				& & \begin{cases}
-	% 					\textbf{w}.\textbf{X}^i + b \leq -1 & Y^i = -1 \\
-	% 					\textbf{w}.\textbf{X}^i + b \geq 1 & Y^i = 1
-	% 				\end{cases} \; \forall i = 1, \dots, n.
-	% 				\end{aligned}
-	% 			\end{equation}
-	% 			\item<2->  Ou encore:
-	% 			\begin{equation}
-	% 				\begin{aligned}
-	% 				& \min_{\textbf{w}}
-	% 				& & {\vert\vert \textbf{w} \vert\vert}^2 \\
-	% 				& \text{sous contrainte}
-	% 				& & Y^i.(\textbf{w}.\textbf{X}^i + b) \geq 1 \; \forall i = 1, \dots, n.
-	% 				\end{aligned}
-	% 			\end{equation}
-	% 		\end{itemize}
-	% 	\end{frame}
-
-	% 	\begin{frame}{Cas non séparable.}
-	% 		\begin{figure}[H]
-	% 			\includegraphics[width=\textwidth]{images/samples/non_separable}
-	% 			\caption*{\label{fig::non_sep} Le séparateur linéaire SVM.}
-	% 		\end{figure}
-	% 	\end{frame}
-
-	% 	\begin{frame}{Cas non séparable.}
-	% 		\begin{figure}[H]
-	% 			\includegraphics[width=\textwidth]{images/samples/stable_margin}
-	% 			\caption*{\label{fig::stable_margin} La marge du séparateur linéaire SVM.}
-	% 		\end{figure}
-	% 	\end{frame}
-
+	\section{Algorithmes supervisé}
+		\subsection{Types de méthodes}
+		\subsection{Méthodes génératives}
+		\subsection{Méthodes discriminative}
 	\section{Références}
 	\begin{frame}[allowframebreaks]{Références}
 		\nocite{sklearn_api}
