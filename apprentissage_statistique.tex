@@ -12,10 +12,11 @@
 \captionsetup{labelsep=period}
 
 \usepackage[]{algorithm2e}
+\SetKwRepeat{Do}{do}{while}
 
 \usepackage{standalone}
 
-\usepackage{amssymb, amsmath, mathrsfs, mathtools, dsfont, bbold}
+\usepackage{amssymb, amsmath, mathrsfs, mathtools, dsfont, bbold, cancel}
 
 \usetheme{ign}
 
@@ -263,15 +264,53 @@
 			\end{frame}
 	\section{Algorithmes non-supervisé}
 		\subsection{L'inertie}
-			\begin{frame}{Disparité intra-cluster}
+			\begin{frame}{Variance intraclasse}
 				\begin{itemize}
 					\item<1-> Soit \(\big(S_k\big)_{k = 1, \dots, K}\) une \(K\)-partition de \(\{1, 2, \dots, n\}\).
 					\item<2-> Pour chaque sous-ensemble \(S_k\), on définit la quantité \(\sum_{i\in S_k} d(X^i, \mu_k)^2\) où:
 						\begin{itemize}
-							\item<3-> \(d: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}_+\) représente une distance: ex. \(d(x, y) = \lVert x - y \rVert\);
+							\item<3-> \(d: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}_+\) représente une distance: dans tout ce qui suit \(d(x, y) = \lVert x - y \rVert\);
 							\item<3-> \(\mu_k\) est le barycentre de \(S_k\): \( \mu_k \triangleq \frac{1}{\vert S_k \vert}.\sum_{i\in S_k} X^i\).
 						\end{itemize}
-					\item<4-> Cette quantité exprime la disparité intra-cluster.
+					\item<4-> Cette quantité exprime la variance intraclasse.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Variance intraclasse}
+				\begin{itemize}
+					\item<1-> On suppose que la variable aléatiore \(Z: \Omega \rightarrow \mathbb{R}^d\) est telle que \(\mathbb{E}(Z) < \infty\) et \(\mathbb{E}(\lVert Z \rVert^2) < \infty\).
+					\item<2-> \(\big(Z^i\big)_{i=1,\dots,p}\) sont \(p\) réaisations indépendentes et identiquement distribuées de même loi que \(Z\).
+					\item<3-> Par définition, la variance empirique de \(\big(Z^i\big)_{i=1,\dots,p}\) est:
+						\begin{equation}
+							\text{Var}_{emp}(\big(Z^i\big)_{i=1,\dots,p}) \triangleq \frac{1}{p} . \sum_{i=1}^{p} \lVert Z^i - \bar Z \rVert^2 \underset{p\infty}{\longrightarrow} \text{Var}(Z) = \mathbb{E}(\lVert Z - \mathbb{E}(Z) \rVert^2)
+						\end{equation}
+						où \(\bar Z := \frac{1}{p}.\sum_{i=1}^{p} Z^i \underset{p\infty}{\longrightarrow} \mathbb{E}(Z)\).
+					\item<4-> La disparité intraclasse vérifie donc bien évidemment:
+						\begin{equation}
+							\sum_{i\in S_k} \lVert X^i - \mu_k \rVert^2 = \vert S_k \vert . \text{Var}_{emp}(S_k)
+						\end{equation}
+						On voit bien que cette quantité exprime la variance des instances qui appartient au cluster \(S_k\).
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Variance intraclasse}
+				\begin{itemize}
+					\item<1-> On remarque aussi que:
+						\only<1>{
+							\scriptsize
+							\begin{align*}
+								\sum_{i,j\in S_k} \lVert X^i - X^j \rVert^2 &= \sum_{i,j\in S_k} \lVert (X^i -\mu_k) + (\mu_k - X^j) \rVert^2\\
+																			&= \sum_{i,j\in S_k} \lVert X^i -\mu_k \rVert^2 + \lVert \mu_k - X^j \rVert^2 + 2 . \langle X^i -\mu_k , \mu_k - X^j \rangle\\
+																			&= \sum_{i,j\in S_k} \lVert X^i -\mu_k \rVert^2 + \sum_{i,j\in S_k} \lVert \mu_k - X^j \rVert^2 + 2. \sum_{i,j\in S_k} \langle X^i -\mu_k , \mu_k - X^j \rangle\\
+																			&= \vert S_k \vert . \sum_{i\in S_k} \lVert X^i -\mu_k \rVert^2 + \vert S_k \vert . \sum_{j\in S_k} \lVert X^j -\mu_k \rVert^2 + 2 . \langle \sum_{i\in S_k}(X^i -\mu_k) , \sum_{j\in S_k} (\mu_k - X^j) \rangle\\
+																			&= 2. \vert S_k \vert . \sum_{i\in S_k} \lVert X^i -\mu_k \rVert^2 + 2.\langle \cancelto{0}{\sum_{i\in S_k} X^i - \vert S_k \vert.\mu_k}, \cancelto{0}{\vert S_k \vert.\mu_k - \sum_{j\in S_k} X^j}\rangle\\
+																			&= 2. \vert S_k \vert . \sum_{i\in S_k} \lVert X^i -\mu_k \rVert^2
+							\end{align*}
+						}
+						\uncover<2->{
+							\begin{equation}
+								\sum_{i,j\in S_k} \lVert X^i - X^j \rVert^2 = 2. \vert S_k \vert . \sum_{i\in S_k} \lVert X^i -\mu_k \rVert^2
+							\end{equation}
+						}
+					\item<3-> Cette équation lie, proportionellement, le premier terme décrivant l'hétérogénité de l'ensemble \(S_k\) avec le deuxième qui exprime la variance intraclasse.
 				\end{itemize}
 			\end{frame}
 
@@ -314,7 +353,7 @@
 						\begin{equation}
 							I_T = I_B(\big(S_k\big)_{k = 1, \dots, K}) + I_W(\big(S_k\big)_{k = 1, \dots, K})
 						\end{equation}
-					\item<2-> Cette quantité exprime la disparité entre les barycentre de cluster et le barycentre de tous les échantillons. Plus elle est grande, plus l'hétérogénité de la partition est grande.
+					\item<2-> Cette quantité \(I_B\) exprime la disparité entre les barycentre de cluster et le barycentre de tous les échantillons. Plus elle est grande, plus l'hétérogénité de la partition est grande.
 					\item<3-> Puisque \(I_T\) est constante, minimiser la disparité intra-cluster \(I_W\) revient à maximiser \(I_B\).
 					\item<4-> Trouver la meilleure partition revient à résoudre le problème:
 						\begin{equation}
@@ -355,37 +394,169 @@
 					\item<7-> On regroupe (\textit{resp.} divise) les clusters qui vérifient le minimum (\textit{resp.} maximum) de distance~\cite{hastie2009unsupervised,ward1963hierarchical}.
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{Algorithme}
-				\begin{algorithm}[H]
-					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
-					\KwData{La métrique de l'espace: \(d: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}_+\)}
-					\KwData{La métrique de cluster: \(D: 2^{\{X^i: i=1,\dots,n\}} \times 2^{\{X^i: i=1,\dots,n\}} \rightarrow \mathbb{R}_+\)}
-					\KwData{Le nombre d'itération maximale: \(I\)}
-					\KwData{Le nombre de cluster: \(K\)}
-					
-					\KwResult{La partition: \(\big(S_k\big)_{k=1,\dots,K}\)}
-					\(i = 0\), \(S^i_k:=\{X^k\}, \quad \forall k = 1,\dots,n\), \(cl=n\)\;
-					\While{\(cl > K\) and \(i < I\)}{
-						\(i := i + 1\)\;
-						\(\big\{c_1, \dots, c_{p_i}\big\} := \arg\min_{\substack{s=1,\dots,cl\\t=1,\dots,cl}} D(S^{i-1}_s, S^{i-1}_t)\)\;
-						\(\{e_1,\dots,e_{q_i}\} := \big\{\bigcup_{\substack{k=1,\dots,p_i\\c_j\cup c_k \neq \emptyset}} c_k: j=1,\dots,p_i\big\}\)\;
-						\(\forall k=1,\dots,q_i \quad S^i_k := \bigcup_{j\in e_k} S^{i-1}_j\)\;
-						\(\big\{S^i_k: k=q_i+1,\dots,cl\} := \{S^{i-1}_h: h\in\{1,\dots,cl\} \setminus \bigcup_{j=1}^{q_i} e_j \big\}\)\;
-						\(cl:= cl + q_i - \sum_{j=1}^{q_i} \vert e_i\vert\)\;
-					}
-				\end{algorithm}
-			\end{frame}
-
 			\begin{frame}{Exemple}
 				\begin{figure}[H]
 					\includegraphics[width=.8\textwidth]{images/samples/hierchical_clustering.png}
 					\caption*{Exemple de clustering hiérarchique}
 				\end{figure}
 			\end{frame}
-		\subsection{Clustering avec partitionnement}
+			\begin{frame}{Algorithme}
+				\begin{algorithm}[H]
+					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
+					\KwData{La métrique de cluster: \(D: 2^{\{X^i: i=1,\dots,n\}} \times 2^{\{X^i: i=1,\dots,n\}} \rightarrow \mathbb{R}_+\)}
+					\KwData{Le nombre d'itération maximale: \(I\)}
+					\KwData{Le nombre de clusters: \(K\)}
+					
+					\KwResult{Le nombre de clusters: \(cl\) et la partition: \(\big(S_k\big)_{k=1,\dots,cl}\)}
+					\(t := 0\), \(S^t_k:=\{X^k\}, \quad \forall k = 1,\dots,n\), \(cl=n\)\;
+					\While{\(cl > K\) and \(t < I\)}{
+						\(t := t + 1\)\;
+						Couples à regrouper: \(\big\{c_1, \dots, c_{p_t}\big\} := \arg\min_{\substack{s=1,\dots,cl\\t=1,\dots,cl}} D(S^{t-1}_s, S^{t-1}_t)\)\;
+						Ensembles à regrouper: \(\{e_1,\dots,e_{q_t}\} := \big\{\bigcup_{\substack{k=1,\dots,p_t\\c_j\cup c_k \neq \emptyset}} c_k: j=1,\dots,p_t\big\}\)\;
+						Regroupement: \(\forall k=1,\dots,q_t \quad S^t_k := \bigcup_{j\in e_k} S^{t-1}_j\)\;
+						Cluster inchangés: \(\big\{S^t_k: k=q_t+1,\dots,cl\} := \{S^{t-1}_h: h\in\{1,\dots,cl\} \setminus \bigcup_{j=1}^{q_t} e_j \big\}\)\;
+						Nombre de clusters: \(cl:= cl + q_t - \sum_{j=1}^{q_t} \vert e_i\vert\)\;
+					}
+				\end{algorithm}
+			\end{frame}
 
-	\section{Algorithmes supervisé}
+		\subsection{Clustering avec partitionnement}
+			\begin{frame}{K-means}
+				\begin{itemize}
+					\item<1-> On suppose que \(K\) le nombre de classes possibles est fixe.
+					\item<2-> On rappelle le problème d'optimisation à résoudre dans ce cas:
+						\begin{equation}
+							\arg \min_{\big(S_k\big)_{k = 1, \dots, K}} \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu_k\rVert^2
+						\end{equation}
+					\item<3-> La complexité en temps pour la résolution de ce problème est \(O(n^{d.K+1})\)~\cite{inaba1994applications}.
+					\item<4-> Elle est exponentielle en dimension \(d\) (curse of dimensionality) et en \(K\).
+					\item<5-> Il faut trouver une heuristique qui est linéaire dans la plupart des cas.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Algorithme de Loyd}
+				\begin{algorithm}[H]
+					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
+					\KwData{Le nombre d'itération maximale: \(I\)}
+					\KwData{Le nombre de clusters: \(K\)}
+
+					\KwResult{La partition: \(\big(S_k\big)_{k=1,\dots,K}\)}
+					\(t := 0\), \(\forall k = 1,\dots,K \quad \mu^t_k := X^{random(\{1,\dots,n\})}\)\;
+					\Do{\(t < I\) and \(\forall k=1,\dots,K \quad \Delta_t\mu_k \neq 0\)}{
+						\(t := t + 1\)\;
+						Assignement: \(\forall k = 1,\dots,K \quad S_k := \arg \min_{i=1,\dots,n} \lVert X^i - \mu^{t - 1}_k \rVert\)\;
+						Mise à jour: \(\forall k = 1,\dots,K \quad \mu^t_k := \frac{1}{\vert S_k \vert}.\sum_{j \in S_k} X^j\)\;
+					}
+				\end{algorithm}
+			\end{frame}
+			\begin{frame}{K-means}
+				\begin{itemize}
+					\item[\color{green}+]<1-> Algorithme simple à implémenter;
+					\item[\color{green}+]<1-> En général, faible complexité en temps: \(O(n.d.K.I)\);
+					\item[\color{red}-]<2-> Convergence vers un minimum local;
+					\item[\color{red}-]<2-> Nécessité de la connaissance \textit{a priori} de \(K\);
+					\item[\color{red}-]<2-> Inadéquation de la métrique Euclidienne.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{ISODATA}
+				\begin{itemize}
+					\item<1-> \(K\) n'est pas fixé.
+					\item<2-> Comme le K-moyennes, sauf qu'on peut regrouper les clusters qui se ressemblent ou diviser ceux qui sont trop hétérogène.
+					\item<3-> Le critère d'arrêt repose sur:
+						\begin{itemize}
+							\item<3-> La moyenne de la distance entre centroïdes passe en dessous d'un seuil;
+							\item<4-> La moyenne du changement de l'inertie intraclasse est en dessous d'un seuil;
+							\item<5-> Le nombre maximale des itérations est atteint.
+						\end{itemize}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{ISODATA}
+				\begin{algorithm}[H]
+					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
+					\KwData{Le nombre d'itération maximale: \(I\)}
+					\KwData{Le nombre de clusters: \(K\)}
+					\KwData{Le seuil de regroupement: \(s_g\)}
+					\KwData{Le seuil d'éclatement: \(s_e\)}
+					\KwData{La tolérance de la disparité des centres: \(T_c\)}
+					\KwData{La tolérance de changement d'inertie: \(T_i\)}					
+
+					\KwResult{Le nombre de clusters: \(K\) et la partition: \(\big(S_k\big)_{k=1,\dots,K}\)}
+					\(t := 0\), \(K^t := random(\{1,\dots,n\})\), \(\forall k = 1,\dots,K^t \quad \mu^t_k := X^{random(\{1,\dots,n\})}\)\;
+					\Do{\(t < I\) and \(\max_{\substack{k=1,\dots,K\\l=1,\dots,K}} d(\mu^t_l, \mu^t_k) > T_c \) and \(\Delta_t I_W(\big(S^t_k\big)_{k = 1, \dots, K}) > T_i\)}{
+						\(t := t + 1\)\;
+						Assignement: \(\forall k = 1,\dots,K^{t-1} \quad S^t_k := \arg \min_{i=1,\dots,n} \lVert X^i - \mu^{i - 1}_k \rVert\)\;
+						Regroupement: \(R := \{\bigcup_{\substack{l = 1,\dots,K^{t-1}\\ \lVert\mu_l - \mu_k\rVert \leq s_g}} S^{t-1}_l: k=1,\dots,K^{t-1}\}\)\;
+						Eclatement: \(\{S_1, \dots, S_{K^t}\} := \bigcup\{eclate(r): r \in R\}\)\;
+						Mise à jour: \(\forall k = 1,\dots,K^t \quad \mu^t_k := \frac{1}{\vert S^t_k \vert}.\sum_{j \in S^t_k} X^j\)\;
+					}
+				\end{algorithm}
+			\end{frame}
+			\begin{frame}{ISODATA}
+				\begin{itemize}
+					\item[\color{green}+]<1-> Algorithme simple à implémenter;
+					\item[\color{green}+]<1-> Moins d'\textit{a priori};
+					\item[\color{red}-]<2-> Convergence vers un minimum local: généralement \(K = 1\);
+					\item[\color{red}-]<2-> Nécessité de la connaissance de plusieur seuils;
+					\item[\color{red}-]<2-> Inadéquation de la métrique Euclidienne.
+				\end{itemize}
+			\end{frame}
+
+	\section{Algorithmes supervisés}
 		\subsection{Types de méthodes}
+			\begin{frame}{Formalisation: fonction de décision}
+				\begin{itemize}
+					\item<1-> On suppose que ${\big((X^i, Y^i)\big)}_{i=1,\dots,n}$ sont des réalisations indépendantes et identiquement distribuées (i.i.d) de la loi $\mathbb{P}(X=x, Y=y) = p(x,y)$.
+					\item<2-> On cherche une fonction de décision $D$ comme suit:
+					\begin{align*}
+						D: \mathbb{R}^d &\rightarrow \{1, \dots, C\} \\
+						x &\mapsto D(x)
+					\end{align*}
+					\item<3-> On définit le regret, ou risque, d'une fonction de décision $D$ par:
+					\begin{equation}
+						R(D) \triangleq \mathbb{E}_{X,Y}(\mathbb{1}(D(X)\neq Y))
+					\end{equation}
+					\item<4-> Cette fonction calcule la mesure de l'espace d'attributs où $D(x) \neq y$:
+					\begin{align*}
+						R(D) &= \mathbb{P}(\{D(X)\neq Y\})\\
+							&= \sum_{y\in \{-1, 1\}} \int_{x \in \mathbb{R}^d} \mathbb{1}(D(x)\neq y) p(dx, y)
+					\end{align*}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Risque empirique}
+				\begin{itemize}
+					\item<1-> Le risque empirique est défini par:
+						\begin{equation}
+							R_n(D) \triangleq \sum_{i=1}^n \mathbb{1}_{D(X^i) \neq Y^i} \underset{n\infty}{\longrightarrow} R(D)
+						\end{equation}
+					\item<2-> Soit \(D^*\) la fonction de décision optimale. Elle vérifie:
+						\begin{equation}
+							D^* \triangleq \arg\min_{D \in \mathscr{F}} R(D)
+						\end{equation}
+					\item<3-> Soit \(\widehat D \) la fonction de décision empirique optimale:
+						\begin{equation}
+							\widehat D \triangleq \arg\min_{D \in \mathscr{F}} R_n(D)
+						\end{equation}
+					\item<3-> Exemple d'ensemble de recherche: \(\mathscr{F} = \{1, \dots, C\}^{\mathbb{R}^d}\) l'ensemble de toute les fonctions possibles.
+					\item<4-> Ce dernier choix est trop naif. En effet, on défini la fonction de décision \(D_{naïve}: x \mapsto \sum_{i=1,\dots,n} Y^i . \delta_{X^i}(x) + \mathbb{1}_{x \notin \{X^i, \forall i=1,\dots,n\}}\). On observe que \(R_n(D_{naïve}) = 0\).
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Sur/Sous apprentissage}
+				\begin{itemize}
+					\item<1-> On quantifie la différence de \(\widehat D \) par rapport à \(D^*\) par:
+						\begin{equation}
+							R(D^*) - 
+						\end{equation}
+					\item<2-> Bias Variance decomp
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Sur/Sous apprentissage}
+				\begin{itemize}
+					\item<1-> On quantifie la différence de \(\widehat D \) par rapport à \(D^*\) par:
+						\begin{equation}
+							R(D^*) - 
+						\end{equation}
+					\item<2-> Bias Variance decomp
+				\end{itemize}
+			\end{frame}
 		\subsection{Méthodes génératives}
 		\subsection{Méthodes discriminative}
 	\section{Références}
