@@ -277,7 +277,7 @@
 			\end{frame}
 			\begin{frame}{Variance intraclasse}
 				\begin{itemize}
-					\item<1-> On suppose que la variable aléatiore \(Z: \Omega \rightarrow \mathbb{R}^d\) est telle que \(\mathbb{E}(Z) < \infty\) et \(\mathbb{E}(\lVert Z \rVert^2) < \infty\).
+					\item<1-> On suppose que la variable aléatoire \(Z: \Omega \rightarrow \mathbb{R}^d\) est telle que \(\mathbb{E}(Z) < \infty\) et \(\mathbb{E}(\lVert Z \rVert^2) < \infty\).
 					\item<2-> \(\big(Z^i\big)_{i=1,\dots,p}\) sont \(p\) réaisations indépendentes et identiquement distribuées de même loi que \(Z\).
 					\item<3-> Par définition, la variance empirique de \(\big(Z^i\big)_{i=1,\dots,p}\) est:
 						\begin{equation}
@@ -501,8 +501,8 @@
 			\end{frame}
 
 	\section{Algorithmes supervisés}
-		\subsection{Types de méthodes}
-			\begin{frame}{Formalisation: fonction de décision}
+		\subsection{Formalisation}
+			\begin{frame}{Fonction de décision}
 				\begin{itemize}
 					\item<1-> On suppose que ${\big((X^i, Y^i)\big)}_{i=1,\dots,n}$ sont des réalisations indépendantes et identiquement distribuées (i.i.d) de la loi $\mathbb{P}(X=x, Y=y) = p(x,y)$.
 					\item<2-> On cherche une fonction de décision $D$ comme suit:
@@ -557,11 +557,125 @@
 					\item<2-> Bias Variance decomp
 				\end{itemize}
 			\end{frame}
+			\begin{frame}{Sur/Sous apprentissage}
+				\begin{figure}[H]
+					\includestandalone[mode=buildnew, width=.5\textwidth]{scatter_separators}
+					\caption*{Illustration des cas de sur/sous apprentissage.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{Discriminatif vs Génératif}
+				\begin{itemize}
+					\item<1-> On sait modéliser la distribution des classes $p(y)$ et celle des instances selon la classe $p(x\vert y)$ $\longrightarrow$ méthode générative,
+						\begin{itemize}
+							\item<2-> Exemple: On s'interresse à la détection de sexe selon deux mesures: taille et poids.
+							\item<3-> On suppose que la répartition des sexes est équilibrée dans le monde $p(y=1) = p(y=0) = \frac{1}{2}$;
+							\item<4-> la répartition des mesures suivent des lois gaussiennes $X\vert Y=y \sim \mathscr{N}(m_y, \sigma_y)$.
+						\end{itemize}
+					\item<5-> On n'a aucune connaissance \textit{a priori}. On cherche à apprendre un modèle de $p(y \vert x)$ $\longrightarrow$ méthode discriminative.
+				\end{itemize}
+			\end{frame}	
 		\subsection{Méthodes génératives}
+			\begin{frame}{Règle de Bayes}
+				\begin{equation}
+					p(y \vert x) = \frac{p(x \vert y).p(y)}{p(x)}
+				\end{equation}
+				\begin{itemize}
+					\item $p(y)$ : probabilité d'appartenir à la classe $y$.
+					\item $p(x)$ : probabilité que l'attribut $X=x$.
+					\item $p(x \vert y)$  : probabilité que $X=x$ pour la classe $y$.
+					\item $p(y \vert x)$  : probabilité d'appartenir à la classe $y$ sachant que $X=x$.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{La classe estimée}
+				\begin{itemize}
+					\item<1-> La classe estimée \(D(x)\) est la classe la plus probable sachant $X=x$: 
+						\begin{equation}
+							D(x) = \arg \max_{y=1,\dots,C} p(y \vert x)
+						\end{equation}
+					\item<2-> Dans le cas génératif, on a donc:
+						\begin{align}
+							D(x) &= \arg \max_{y=1,\dots,C} \frac{p(x \vert y).p(y)}{p(x)}\\
+							D(x) &= \arg \max_{y=1,\dots,C} p(x \vert y).p(y)
+						\end{align}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Exemple: Tennis or no Tennis}
+				\begin{table}[H]
+					\begin{center}
+						\begin{tabular}{c c c c c}
+							\toprule
+							Temps (C) & Température (T) & Humidité (H) & Vent (V) & Tennis\\
+							\midrule
+							soleil & chaud & élevée & non & non\\
+							soleil & chaud & élevée & oui & non\\
+							couvert & chaud & élevée & non & oui\\
+							pluie & tiède & élevée & non & oui\\
+							pluie & froid & normale & non & oui\\
+							pluie & froid & normale & oui & non\\
+							couvert & froid & normale & oui & oui\\
+							soleil & tiède & élevée & non & non\\
+							soleil & froid & normale & non & oui\\
+							pluie & tiède & normale & non & oui\\
+							soleil & tiède & normale & oui & oui\\
+							couvert & tiède & élevée & oui & oui\\
+							couvert & chaud & normale & non & oui\\
+							\bottomrule
+						\end{tabular}
+					\end{center}
+				\end{table}
+			\end{frame}
+			\begin{frame}{Exemple: Tennis or no Tennis}
+				\begin{itemize}
+					\item \(p(Tennis = oui) = \frac{9}{14}\) et \(p(Tennis = non) = \frac{5}{14}\);
+					\item On suppose que les différentes mesures de climats sont indépendantes \(P((C, T, H, V) \vert Tennis) = P(C\vert Tennis).P(T\vert Tennis).P(H\vert Tennis).P(V\vert Tennis)\);
+					\item Application numérique pour \(X=(pluie, chaud,\)\textit{élevée}\(, non)\): 
+						\[p(Tennis = oui \vert X) = p(X\vert Tennis = oui) . p(Tennis = oui) \approx 0.010582\]
+						\[p(Tennis = non \vert X) = p(X\vert Tennis = non) . p(Tennis = non) \approx \boldmath 0.018286\]
+						Donc quand il pleut, il fait chaud, la température est élevée et il n'y a pas de vent, on ne joue pas.
+				\end{itemize}
+			\end{frame}
 		\subsection{Méthodes discriminative}
+			\begin{frame}{Méthodes de centroïdes}
+				\begin{itemize}
+					\item<1-> On s'inspire du clustering: On assigne la classe dont le centroïde est le plus proche.
+					\item<2-> On pose \(\mu_k = \frac{1}{\vert \{i\in\{1,\dots,n\}: Y^i = k\} \vert}.\sum_{\substack{i=1,\dots,n\\Y^i = k}} X^i\). On peut écrire:
+						\begin{equation}
+							D_{centroid}(x) \triangleq \arg \min_{k=1,\dots,C} \lVert x - \mu_k \rVert
+						\end{equation}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Méthodes de centroïdes}
+				\begin{figure}[H]
+					\includestandalone[mode=buildnew, height=.5\textheight]{scatter_circles_class}
+					\caption*{Problème de la méthode de centroïde. Les deux classes sont cocentriques.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{k-NN}
+				\begin{itemize}
+					\item<1-> On choisit les \(k\) instances les plus proches de l'observation \(x\). On assigne à cette observation la classe majoritaire parmi les \(k\) classes de ces voisins.
+					\item<2-> Soit \(o_1,\dots,o_n\) les indices qui guarantissent: \(\lVert x - X^{o_1} \rVert \leq \lVert x - X^{o_2} \rVert \dots \leq \lVert x - X^{o_n} \rVert\). Les \(k\) plus proches voisins sont donc \(\{X^{o_1}, X^{o_2},\dots,X^{o_k}\}\).
+					\item<3-> On définit donc la fonction de décision du k-NN par:
+						\begin{equation}
+							D_{knn}(x) \triangleq \arg \max_{c=1,\dots,C} \sum_{i=1,\dots,k} \mathbb{1}_{Y^{o_i} = c}
+						\end{equation}
+					\item<4-> Plus k augmente, plus les frontières seront lisses.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Arbres de décision}
+				\begin{figure}[H]
+					\includestandalone[mode=buildnew, width=.7\textwidth]{decision_tree}
+					\caption*{Exemple d'arbre de décision.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{Forêts aléatoire}
+				
+			\end{frame}
+	
+	\section{Qualification des résultats}
+		\subsection{}
+
 	\section{Références}
 	\begin{frame}[allowframebreaks]{Références}
-		\nocite{sklearn_api}
 		\bibliographystyle{apalike}
 		\bibliography{references.bib}
 	\end{frame}
