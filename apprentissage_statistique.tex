@@ -310,7 +310,7 @@
 								\sum_{i,j\in S_k} \lVert X^i - X^j \rVert^2 = 2. \vert S_k \vert . \sum_{i\in S_k} \lVert X^i -\mu_k \rVert^2
 							\end{equation}
 						}
-					\item<3-> Cette équation lie, proportionellement, le premier terme décrivant l'hétérogénité de l'ensemble \(S_k\) avec le deuxième qui exprime la variance intraclasse.
+					\item<3-> Cette équation lie, proportionellement, le premier terme décrivant l'hétérogénéité de l'ensemble \(S_k\) avec le deuxième qui exprime la variance intraclasse.
 				\end{itemize}
 			\end{frame}
 
@@ -353,7 +353,7 @@
 						\begin{equation}
 							I_T = I_B(\big(S_k\big)_{k = 1, \dots, K}) + I_W(\big(S_k\big)_{k = 1, \dots, K})
 						\end{equation}
-					\item<2-> Cette quantité \(I_B\) exprime la disparité entre les barycentre de cluster et le barycentre de tous les échantillons. Plus elle est grande, plus l'hétérogénité de la partition est grande.
+					\item<2-> Cette quantité \(I_B\) exprime la disparité entre les barycentre de cluster et le barycentre de tous les échantillons. Plus elle est grande, plus l'hétérogénéité de la partition est grande.
 					\item<3-> Puisque \(I_T\) est constante, minimiser la disparité intra-cluster \(I_W\) revient à maximiser \(I_B\).
 					\item<4-> Trouver la meilleure partition revient à résoudre le problème:
 						\begin{equation}
@@ -663,11 +663,131 @@
 			\end{frame}
 			\begin{frame}{Arbres de décision}
 				\begin{figure}[H]
-					\includestandalone[mode=buildnew, width=.7\textwidth]{decision_tree}
-					\caption*{Exemple d'arbre de décision.}
+					\includegraphics[width=.65\textwidth]{images/samples/example_dt_iris_dataset.png}
+					\caption*{Exemple d'arbre de décision appliquée à l'Iris dataset: 4 attributs (longueur de sépale, largeur de sépale, longuer de pétale et largeur de pétale) et 3 classes: (``Iris Setosa'', ``Iris Versicolour'', ``Iris Virginica'').}
 				\end{figure}
 			\end{frame}
-			\begin{frame}{Forêts aléatoire}
+			\begin{frame}{Arbres de décision: construction}
+				\begin{itemize}
+					\item<1-> On commence par la racine: Toutes les instances sont présentes.
+					\item<2-> On choisit l'attribut et le seuil qui permettent de séparer le mieux en groupes homogènes les observations.
+					\item<3-> On répète la deuxième étape à chaque groupe jusqu'à:
+						\begin{itemize}
+							\item<4-> Atteindre un groupe pure: il contient que des observations ayant la même classe;
+							\item<5-> Atteindre un critère d'arrêt.
+						\end{itemize}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Arbres de décision: critère d'arrêt}
+				Exemples:
+				\begin{itemize}
+					\item<1-> Nombre minimum d’observations par groupe.
+					\item<2-> Toutes les observations d’une branche sont de la même classe (feuille pure).
+					\item<3-> Degré de pureté maximale atteinte \(p\): \(\frac{\vert Y \vert}{\vert G\vert} \geq p\) où: \(Y\) est l'ensemble des instances de la classe majoritaire et \(G\) l'ensemble de toutes les observations dans le groupe en question. Le cas précédent est un cas particulier avec \(p = 1\).
+					\item<4-> Profondeur de l’arbre maximale atteinte.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Mesure d'hétérogénéité}
+				\begin{itemize}
+					\item<1-> Soit \(S\) une famille (répétitvité possible) d'éléments. Dans notre cas, \(S := ((Y^i)_{i=1,\dots,n})\).
+					\item<2-> On définit \(p_k := \frac{\vert \big\{i \in \{1,\dots,n\}: Y^i = k\big\}\vert}{n}\) la probabilité empirique de la valeur \(k \in \{1,\dots,C\}\).
+					\item<3-> On désire mesurer son hétérogénéité par rapport au classes \(Y^i\). Soit \(H: S\mapsto H(S)\) une telle mesure.
+					\item<4-> Le cas le moins hétérogène est le cas \(\exists k_0 \forall k, p_k = \delta_{k_0}\). Dans ce cas, \(H(S)\) doit atteindre son minimum.
+					\item<5-> Le maximum de \(H\), par contre, est atteint dans le cas où toutes les valeurs de classes sont également probables: \(p_k = \frac{1}{C}, \quad \forall k=1,\dots,C\): le cas le plus hétérogène.
+					\item<6-> Exemples de telles mesures:
+						\begin{itemize}
+							\item L'entropie:
+								\begin{equation}
+									H_E \triangleq - \sum_{k=1}^C p_k . \ln(p_k)
+								\end{equation}
+							\item L'indice de Ginni:
+								\begin{equation}
+									H_G \triangleq \sum_{k=1}^C p_k(1-p_k) = 1 - \sum_{k=1}^C p_k^2
+								\end{equation}
+						\end{itemize}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Mesure de qualité de séparation}
+				\begin{itemize}
+					\item<1-> Soit \(\big(S_k\big)_{k = 1, \dots, K}\) une \(K\)-partition de \(S\).
+					\item<2-> Une bonne séparation se traduit par un gain d'homogéniété après séparation: i.e. les sous-ensembles \(S_k\) sont moins hétérogène que l'ensemble d'origine.
+					\item<3-> On définit le gain de la partition \(\big(S_k\big)_{k = 1, \dots, K}\) par:
+						\begin{equation}
+							G\big((S_1, \dots, S_K)\big) \triangleq H(S) - \sum_{k=1}^K \frac{\vert S_k \vert}{\vert S \vert}H(S_k)
+						\end{equation}
+					\item<4-> Trois cas se précisent:
+						\begin{itemize}
+							\item<5-> \(G\big((S_1, \dots, S_K)\big) > 0\): la partition permet de bien séparer \(S\) de façon à avoir des sous-ensembles plus ``pures'';
+							\item<6-> \(G\big((S_1, \dots, S_K)\big) = 0\): la partition donne des des sous-ensembles aussi hétérogène que \(S\): on ne gagne rien;
+							\item<7-> \(G\big((S_1, \dots, S_K)\big) < 0\): la partition perd de ``pureté'' par rapport à \(S\).
+						\end{itemize}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Mesure de qualité de séparation: arbres de décision}
+				\begin{itemize}
+					\item<1-> L'arbre naïf choisirait des critères sur \(Y^i\). Sauf que ces classes ne seront pas observables, en phase, de test.
+					\item<2-> On choisit le couple attribut \(X_c\) et seuil \(s\) le plus discriminant: les seules partitions possibles sont: \(S_1 := \{i \in S: X_c - s > 0\}\) ou \(S_2 := \{i \in S: X^c - s \leq 0\}\).
+					\item<3-> Dans ce cas, par abus de language, on note le gain de cette séparation: \(G(c, s) := G\big((S_1, S_2)\big)\)
+					\item<4-> Cela revient à résoudre le problème:
+						\begin{equation}
+							\arg \max_{\substack{c=1,\dots,d\\s \in \mathscr{S}_c}} G(c, s)
+						\end{equation}
+						où \(\mathscr{S}_c\) est l'ensemble de valeurs possibles pour l'attribut \(c\).
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Exemple: Tennis or no Tennis}
+				\begin{table}[H]
+					\begin{center}
+						\begin{tabular}{c c c c c}
+							\toprule
+							Temps (C) & Température (T) & Humidité (H) & Vent (V) & Tennis\\
+							\midrule
+							soleil & chaud & élevée & non & non\\
+							soleil & chaud & élevée & oui & non\\
+							couvert & chaud & élevée & non & oui\\
+							pluie & tiède & élevée & non & oui\\
+							pluie & froid & normale & non & oui\\
+							pluie & froid & normale & oui & non\\
+							couvert & froid & normale & oui & oui\\
+							soleil & tiède & élevée & non & non\\
+							soleil & froid & normale & non & oui\\
+							pluie & tiède & normale & non & oui\\
+							soleil & tiède & normale & oui & oui\\
+							couvert & tiède & élevée & oui & oui\\
+							couvert & chaud & normale & non & oui\\
+							\bottomrule
+						\end{tabular}
+					\end{center}
+				\end{table}
+			\end{frame}
+			\begin{frame}{Exemple: Tennis or no Tennis}
+				\begin{itemize}
+					\item<1-> Racine: 8 | 4 \(\longrightarrow H_G = 1 - \frac{1}{9} - \frac{4}{9} = \frac{4}{9}\) ;
+						\begin{itemize}
+							\scriptsize
+							\item c=C, s=couvert: \(\longrightarrow H_G (C > s) = 1 - \frac{9}{25} - \frac{4}{25} = \frac{12}{25}\) and \(H_G (C \leq s) = 1- frac{25}{49} - \frac{4}{49} = \frac{20}{49}\).
+								\(G(C, couvert) = \frac{4}{9} - \frac{1}{5} . \frac{12}{25} - \frac{1}{7} . \frac{12}{49} \approx 0.2901\)
+							\item c=C, s=pluie \(\longrightarrow H_G (C > s) = 1 - \frac{25}{64} - \frac{9}{64} = \frac{15}{32}\) and \(H_G (C \leq s) = 1- \frac{1}{16} - \frac{9}{16} = \frac{3}{8}\).
+								\(G(C, couvert) = \frac{4}{9} - \frac{1}{4} . \frac{3}{8} - \frac{1}{8} . \frac{15}{32} \approx 0.2921\)
+							\item c=T, s=tiède \(\longrightarrow H_G (C > s) = 1 - \frac{1}{4} - \frac{1}{4} = \frac{1}{2}\) and \(H_G (C \leq s) = 1- \frac{36}{64} - \frac{4}{64} = \frac{3}{8}\).
+								\(G(C, couvert) = \frac{4}{9} - \frac{1}{2} . \frac{1}{2} - \frac{1}{8} . \frac{3}{8} \approx 0.1476\)
+							\item c=T, s=froid \(\longrightarrow H_G (C > s) = 1 - \frac{25}{64} - \frac{9}{64} = \frac{15}{32}\) and \(H_G (C \leq s) = 1- \frac{1}{16} - \frac{9}{16} = \frac{3}{8}\).
+								\(G(C, couvert) = \frac{4}{9} - \frac{1}{4} . \frac{3}{8} - \frac{1}{8} . \frac{15}{32} \approx 0.2921\)
+							\item \textbf{c=H, s=normale} \(\longrightarrow H_G (C > s) = 1 - \frac{1}{4} - \frac{1}{4} = \frac{1}{2}\) and \(H_G (C \leq s) = 1- \frac{25}{36} - \frac{1}{36} = \frac{5}{18}\).
+								\(G(C, couvert) = \frac{4}{9} - \frac{1}{6} . \frac{1}{2} - \frac{1}{6} . \frac{5}{18} \approx 0.314814\)
+							\item c=V, s=non \(\longrightarrow H_G (C > s) = 1 - \frac{9}{25} - \frac{4}{25} = \frac{12}{25}\) and \(H_G (C \leq s) = 1- \frac{25}{49} - \frac{4}{49} = \frac{20}{49}\).
+								\(G(C, couvert) = \frac{4}{9} - \frac{1}{5} . \frac{12}{25} - \frac{1}{7} . \frac{20}{49} \approx 0.2901\)
+						\end{itemize}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Exemple: 2D}
+				\begin{figure}[H]
+					\includegraphics[width=.7\textwidth]{images/samples/boundary_decision_tree.png}
+					\caption*{Visualization de la frontière de l'arbre de décision: 2 attributs. Plus l'arbre est profond, plus la frontière est accidentée.}
+				\end{figure}
+			\end{frame}
+
+			\begin{frame}{Méthodes ensemblistes}
 				
 			\end{frame}
 	
