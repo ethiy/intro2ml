@@ -5,6 +5,7 @@
 
 \usepackage{longtable}
 \usepackage{booktabs}
+\usepackage{multirow}
 
 \usepackage{graphicx}
 \usepackage{subfig}
@@ -788,12 +789,162 @@
 			\end{frame}
 
 			\begin{frame}{Méthodes ensemblistes}
-				
+				\begin{figure}[H]
+					\includestandalone[mode=buildnew, height=.5\textheight]{ensemblist_method}
+					\caption*{Principe des méthodes ensemblistes: chaque fonction de décision (classifieur) a une région où il est mauvais. Une bonne méthode ensembliste cherchera, pour chaque point de l'espace, à éviter d'utiliser les classifieurs qui donnent des erreurs en choisissant la meilleure combinaison.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{Méthodes ensemblistes: forêt aléatoire}
+				\begin{figure}[H]
+					\includestandalone[mode=buildnew, height=.6\textheight]{circles_dt}
+					\caption*{Frontière d'un arbre de décision: on remarque qu'il sur-apprend sur les observations données.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{Méthodes ensemblistes: forêt aléatoire}
+				\begin{figure}[H]
+					\includestandalone[mode=buildnew, height=.6\textheight]{circles_rf}
+					\caption*{Frontière d'une forêt aléatoire: on multiplie les arbres de décisions (en vert) peu profond (donc qui sous-apprennent). Chaque arbre donne une classe probable. Elles sont toute conbinée pour donner la classe finale.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{Forêt aléatoire}
+				\begin{itemize}
+					\item<1-> Pour construire une forêt aléatoire qui contient \(A\) arbres;
+					\item<2-> Pour chacun des \(A\) arbres, on sélectionne aléatoirement une sous partie des attributs: \(X^i_{(a)} = \begin{pmatrix}
+						X^i_{o^a_1} & X^i_{o^a_2} & \vdots & X^i_{o^a_{d_a}}
+					\end{pmatrix}^T, \quad \forall a = 1,\dots,A  i=1,\dots,n\).
+					\item<3-> On construit un arbre de décision simple qui sera expert en un sous espace de l'espace s'attributs.
+					\item<4-> Pour connaître la classe de \(x \in \mathbb{R}^d\), on sélectionne les attributs \(x_a, \quad \forall a = 1,\dots,A\) et on fait passer chacun par l'arbre qui correspond.
+					\item<5-> Cela donne les classes \(y_a, \quad \forall a = 1,\dots,A\). Par vote majoritaire, on décide la classe la plus probable:
+						\begin{equation}
+							D_{random\ forest, absolute} (x) \triangleq \arg \max_{k=1,\dots,C} \vert \{a \in \{1,\dots,A\}: y_a = k\} \vert
+						\end{equation}
+					\item<6-> On peut extraire aussi le couple classe et sa probabilité de chaque arbre \((y_a, p_a), \quad \forall a = 1,\dots,A\). On relache la définition précédente pour donner:
+						\begin{equation}
+							D_{random\ forest, weighted} (x) \triangleq \arg \max_{k=1,\dots,C} \sum_{\substack{a=1,\dots,A\\y_a = k}} p_a
+						\end{equation}
+			\end{itemize}
 			\end{frame}
 	
-	\section{Qualification des résultats}
-		\subsection{}
-
+	\section{Evaluation de classifieur}
+		\subsection{Principe}
+			\begin{frame}{Evaluer une classification}
+				\begin{itemize}
+					\item<1-> Évaluation: comparaison de résultats d’une classifications aux données de référence.
+					\item<2-> On compte le nombre de fois où le classifieur donne une mauvaise réponse, à opposer à une bonne réponse.
+					\item<3-> Plus la vérité terrain est exhaustive (couvre de classes d’intérêt), meilleure est la compréhension des limites de la classification.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{}
+				\begin{itemize}
+					\item<1-> Comparaison de classifieur : i.e. décision pour savoir si un classifieur est meilleur qu’un autre;
+					\item<2-> Choisir les meilleurs paramètres du classifieur.
+				\end{itemize}
+			\end{frame}
+		\subsection{Matrice de confusion et ratios}
+			\begin{frame}{Matrice de confusion}
+				\begin{table}[H]
+					\begin{tabular}{| c | c | c | c | c | c |}
+						\hline
+						& \multicolumn{5}{c |}{Vérité terrain}\\
+						\hline
+						\multirow{5}{*}{\rotatebox{90}{Prédictions}}& & 1 & 2 & \dots & C\\
+						\cline{2-6}
+						& 1 & \(n_{11}\) & \(n_{12}\) & & \(n_{1C}\)\\
+						\cline{2-6}
+						& 2 & \(n_{21}\) & \(n_{22}\) & & \(n_{2C}\)\\
+						\cline{2-6}
+						& \rotatebox{90}{\dots} & & & & \\
+						\cline{2-6}
+						& C & \(n_{C1}\) & \(n_{C2}\) & & \(n_{CC}\)\\
+						\hline
+					\end{tabular}
+					\caption*{Matrice de confusion: \(n_{ij}\) nombre d'éléments de classe \(j\) et prédits de classe \(i\).}
+				\end{table}
+			\end{frame}
+			\begin{frame}{Ratios}
+				\begin{itemize}
+					\item<1-> Rappel: exhaustivité de la détection. Parmi les éléments qui font partie d'une classe donnée, combien sont bien prédit correctement:
+						\begin{equation}
+							R = \frac{n_{ii}}{\sum_i n_{ij}}
+						\end{equation}
+					\item<2-> Précision: exactitude des prédiction. Parmi les éléments qui sont prédits être d'une classe donnée, combien en font partie réellement:
+						\begin{equation}
+							P = \frac{n_{ii}}{\sum_j n_{ij}}
+						\end{equation}
+					\item<3-> F-score: moyenne harmonique de la précision et du rappelle:
+						\begin{equation}
+							F_{score} = \frac{2}{\frac{1}{P} + \frac{1}{P}}
+						\end{equation}
+				\item<4-> Taux de bonne classification:
+						\begin{equation}
+							OA = \frac{\sum_i n_{ii}}{\sum_{i,j} n_{ij}}
+						\end{equation}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{ROC}
+				Dans le case de classification binaire, on calcule les deux ratios:
+				\begin{itemize}
+					\item<1-> Taux de Faux Positifs (FPR):
+						\begin{equation}
+							FPR = \frac{n_{00}}{n_{00} + n_{10}}
+						\end{equation}
+					\item<2-> Taux de Vrais Positifs (TPR):
+						\begin{equation}
+							TPR = R
+						\end{equation}
+				\end{itemize}
+				\uncover<3->{
+					On affiche donc le TPR en fonction du FPR: on l'appelle l'espace Receiver Operating Characteristic (ROC).
+				}
+			\end{frame}
+			\begin{frame}{Espace ROC}
+				\begin{figure}[H]
+					\includegraphics[width=.45\textwidth]{images/samples/roc.png}
+					\caption*{Espace de ROC~\cite{schrynemackers2009using}. Le classifieur correspondant au point (C) ``déapprend'': il est pire que le classifieur aléatoire.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{Courbe ROC}
+				\begin{itemize}
+					\item<1-> Un classifieur discret produit un unique couple (FPR, TPR), qui correspond à un point unique dans l’espace ROC.
+					\item<2-> Certains classifieurs fournissent un score ou une probabilité d’appartenance: le degré de confiance en l’appartenance à la classe.
+					\item<3-> En fixant un seuil de score, on se demande, à une confiance supérieure au seuil, quelle serait la qualité du classifieur: affichée par le point correspondant dans l'espace ROC.
+					\item<4-> On obtient ainsi une courbe ROC pour chaque seuil envisageable.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Courbes ROC}
+				\begin{figure}[H]
+					\includegraphics[width=.6\textwidth]{images/samples/roc_curves.png}
+					\caption*{Exemples de courbes ROC~\cite{ROCS}.}
+				\end{figure}
+			\end{frame}
+			\begin{frame}{AUC}
+				\begin{itemize}
+					\item<1-> On peut définir un seul scalaire pour ordonner les courbes ROC. On définit l'aire sous la courbe (Area Under Curve) d'un classifieur \(\mathscr{C}\) avec une courbe \(\mathscr{R}(\mathscr{C})\):
+					\begin{equation}
+						AUC(\mathscr{C}) \triangleq \int_{FPR\in[0,1]} \mathscr{C}(FPR)
+					\end{equation}
+					\item<2-> Plus le \(AUC\) est grand, meilleur est le classifieur.
+					\item<3-> Le classifieur aléatoire a \(AUC(Rand) = 0.5\).
+					\item<4->\(AUC(\mathscr{C}) \leq 0.5 \Longrightarrow\) \(\mathscr{C}\) n'apprend rien.
+				\end{itemize}
+			\end{frame}
+		\subsection{Validation croisée}
+			\begin{frame}{Principe}
+				\begin{itemize}
+					\item<1-> Les échantillons jouent un rôle important dans l'apprentissage.
+					\item<2-> Comment réagissent les scores d'évaluation de classifieur quand on rajoutte plus de données?
+					\item<3-> Comment choisir les meilleurs paramètres de classifieur pour avoir la meilleur stabilité de résultats?
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Procédure}
+				\begin{itemize}
+					\item<1-> On divise donc la base de données en \(k\) parties.
+					\item<2-> On fusionne \(k-1\) parties et entraîne dessus le classifieur. On test sur la partie restante.
+					\item<3-> Il y a donc \(\binom{k}{k-1} = k\) cas.
+					\item<4-> On conduit les \(k\) expériences. On peut donc calculer des statistiques sur ces résultats.
+					\item<5-> On peut ainsi comparer des classifieurs en comparant ces statistiques.
+				\end{itemize}
+			\end{frame}
 	\section{Références}
 	\begin{frame}[allowframebreaks]{Références}
 		\bibliographystyle{apalike}
