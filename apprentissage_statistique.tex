@@ -534,7 +534,7 @@
 						\end{equation}
 					\item<3-> Soit \(\widehat D \) la fonction de décision empirique optimale:
 						\begin{equation}
-							\widehat D \triangleq \arg\min_{D \in \mathscr{F}} R_n(D)
+							\widehat D_n \triangleq \arg\min_{D \in \mathscr{F}} R_n(D)
 						\end{equation}
 					\item<3-> Exemple d'ensemble de recherche: \(\mathscr{F} = \{1, \dots, C\}^{\mathbb{R}^d}\) l'ensemble de toute les fonctions possibles.
 					\item<4-> Ce dernier choix est trop naif. En effet, on défini la fonction de décision \(D_{naïve}: x \mapsto \sum_{i=1,\dots,n} Y^i . \delta_{X^i}(x) + \mathbb{1}_{x \notin \{X^i, \forall i=1,\dots,n\}}\). On observe que \(R_n(D_{naïve}) = 0\).
@@ -542,23 +542,15 @@
 			\end{frame}
 			\begin{frame}{Sur/Sous apprentissage}
 				\begin{itemize}
-					\item<1-> On quantifie la différence de \(\widehat D \) par rapport à \(D^*\) par:
+					\item<1-> On quantifie la différence de \(\widehat D_n \) par rapport à la fonction de décision optimale par:
 						\begin{equation}
-							R(D^*) - 
+							R(\widehat D_n) - \min_{D \in \{1, \dots, C\}^{\mathbb{R}^d}} R(D) = \overbrace{R(\widehat D_n) - R(D^*)}^{la\ variance} + \overbrace{R(D^*) - \min_{D \in \{1, \dots, C\}^{\mathbb{R}^d}} R(D)}^{le\ biais}
 						\end{equation}
-					\item<2-> Bias Variance decomp
+					\item<2-> Le terme de variance exprime la différence, purement stochastique, entre l'optimum \(D^*\) conditionné dans l'ensemble \(\mathscr{F}\) et l'optimum empirique;
+					\item<3-> le terme de biais exprime la différence entre l'optimum \(D^*\) par rapport à la fonction de décision optimale.
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{Sur/Sous apprentissage}
-				\begin{itemize}
-					\item<1-> On quantifie la différence de \(\widehat D \) par rapport à \(D^*\) par:
-						\begin{equation}
-							R(D^*) - 
-						\end{equation}
-					\item<2-> Bias Variance decomp
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Sur/Sous apprentissage}
+			\begin{frame}{Sur/Sous apprentissage: le compromis}
 				\begin{figure}[H]
 					\includestandalone[mode=buildnew, width=.5\textwidth]{scatter_separators}
 					\caption*{Illustration des cas de sur/sous apprentissage.}
