@@ -2,6 +2,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
 
 \usepackage{longtable}
 \usepackage{booktabs}
@@ -35,7 +36,7 @@
 
 	\section{Introduction}
 		\begin{frame}{Classification: première définition}
-			Champs lexical de classer:
+			Champs lexical de classer :
 			\begin{itemize}
 				\item<2-> ranger,
 				\item<3-> labeliser,
@@ -51,8 +52,8 @@
 		
 		\begin{frame}{Comment classer?}
 			\begin{itemize}
-					\item<1-> Comment caractériser un objet à classer?
-					\item<2-> Comment sont-elle définit les catégories (ou classes) d'objets?
+					\item<1-> Comment caractériser un objet à classer ?
+					\item<2-> Comment sont définies les catégories (ou classes) d'objets?
 			\end{itemize}
 		\end{frame}
 	
@@ -116,7 +117,7 @@
 		\subsection{Observations}
 			\begin{frame}{Comment caractériser les observations?}
 				\begin{itemize}
-					\item<1-> Comment sont représentés les données à classer?
+					\item<1-> Comment sont représentées les données à classer?
 					\item<2-> Quel est le point commun entre ces observations?
 				\end{itemize}
 			\end{frame}
@@ -126,8 +127,8 @@
 				\begin{itemize}
 					\item<2-> Image;
 					\item<3-> Série temporelle (son, vidéo \dots);
-					\item<4-> Graph de données;
-					\item<5-> Nuage de points (LIDAR par exemple).
+					\item<4-> Graphe de données;
+					\item<5-> Nuage de points (LiDAR par exemple).
 				\end{itemize}
 			\end{frame}
 
@@ -153,65 +154,17 @@
 				\end{itemize}
 			\end{frame}
 
-			\begin{frame}{Apprentissage supervisé}
-				Dans le cas supervisé:
-				\begin{itemize}
-					\item<1-> Des classes sont définis \textit{a priori}: \(\{1,\dots, C\}\);
-					\item<2-> Les observations sont divisée en deux ensembles:
-						\begin{itemize}
-							\item<3-> L'ensemble d'entraînement: chaque observation \(X^i, i=1,\dots,n_{train}\) a une classe \(Y^i \in \{1,\dots, C\}\);
-							\item<4-> L'ensemble de test: des observations \(X^i, i=n_{train},\dots,n\) pour lesquels les classes \(Y^i, i=n_{train},\dots,n\) sont inconnues.
-						\end{itemize}
-					\item<5-> On ``apprend'' un modèle sur l'ensemble d'entraînement afin de prédire les classes \(Y^i, i=n_{train},\dots,n\) à partir des attributs \(X^i, i=n_{train},\dots,n\) seulement.
-				\end{itemize}
-			\end{frame}
-
-			\begin{frame}{Apprentissage supervisé}
-				\begin{figure}[H]
-					\includegraphics[height=.55\textheight]{images/samples/shapes_supervised}
-					\caption*{Exemple de problème d'apprentissage supervisé: les classes (formes géométriques) sont données.}
-				\end{figure}
-			\end{frame}
-
-			\begin{frame}{Apprentissage supervisé}
-				Comment décrire les observations en forme de vecteur?
-				\begin{itemize}
-					\item<2-> nombre de côtés;
-					\item<3-> nombre de sommets;
-					\item<4-> convexité;
-					\item<5-> symmetrie par rotation;
-					\item<6-> \dots;
-				\end{itemize}
-				\uncover<7->{
-					Pour une observation, dont la forme (classe) est un carré, le vecteur d'attributs s'écrit:
-					\[\begin{pmatrix}
-						4\\
-						4\\
-						True\\
-						False\\
-						\vdots
-					\end{pmatrix}\]
-				}
-			\end{frame}
-
-			\begin{frame}{Apprentissage supervisé}
-				\begin{figure}[H]
-					\begin{center}
-						\includestandalone[mode=buildnew, height=.5\textheight]{scatter_gender_dataset}
-						\caption*{\tiny Exemple de problème de classification supervisé: 2 attributs et 2 classes.}
-					\end{center}
-				\end{figure}
-			\end{frame}
-
+	\section{Algorithmes non-supervisés}
+		\subsection{Définition}
 			\begin{frame}{Apprentissage non-supervisé}
 				\begin{itemize}
 					\item<1-> Dans le cas de l'apprentissage non-supervisé, on n'observe que les objets à classer, représentés par leurs attributs \(\big(X^i\big)_{i=1,\dots, n}\);
-					\item<2-> Le but est de partitionner les instances en groupes (ou clusters) homgènes se ``ressemblent'' en un seul cluster;
-					\item<3-> La ressemblance est basée sur les distances dans l'espace des attributs;
+					\item<2-> Le but est de partitionner les instances homogènes se ``ressemblant'' en un seul cluster;
+					\item<3-> La ressemblance est basée sur la distance entre deux objets dans l'espace des attributs;
 					\item<4-> La partition guarantie:
 						\begin{itemize}
 							\item<5-> des distances faibles intra-cluster;
-							\item<6-> des distances grandes intra-cluster.
+							\item<6-> des distances grandes inter-cluster.
 						\end{itemize}
 				\end{itemize}
 			\end{frame}
@@ -224,7 +177,7 @@
 			\end{frame}
 
 			\begin{frame}{Apprentissage supervisé}
-				Comment décrire les observations en forme de vecteur?
+				Comment choisir ses attributs pour représenter chaque observation sous forme de vecteur?
 				\begin{itemize}
 					\item<2-> nombre de côté du motif régulier;
 					\item<3-> couleur rouge;
@@ -234,8 +187,8 @@
 					\item<7-> couleur jaune;
 					\item<8-> couleur orange;
 					\item<9-> convexité du motif;
-					\item<10-> symmetrie par rotation du motif;
-					\item<11-> symmetrie par translation du motif;
+					\item<10-> symétrie par rotation du motif;
+					\item<11-> symétrie par translation du motif;
 					\item<12-> \dots;
 				\end{itemize}
 				\uncover<13->{
@@ -245,7 +198,6 @@
 					\end{pmatrix}^T\]
 				}
 			\end{frame}
-
 			\begin{frame}{Apprentissage non-supervisé}
 				\begin{figure}[H]
 					\begin{center}
@@ -254,7 +206,6 @@
 					\end{center}
 				\end{figure}
 			\end{frame}
-
 			\begin{frame}{Apprentissage non-supervisé}
 				\begin{figure}[H]
 					\begin{center}
@@ -263,36 +214,40 @@
 					\end{center}
 				\end{figure}
 			\end{frame}
-	\section{Algorithmes non-supervisé}
+
 		\subsection{L'inertie}
 			\begin{frame}{Variance intraclasse}
 				\begin{itemize}
 					\item<1-> Soit \(\big(S_k\big)_{k = 1, \dots, K}\) une \(K\)-partition de \(\{1, 2, \dots, n\}\).
-					\item<2-> Pour chaque sous-ensemble \(S_k\), on définit la quantité \(\sum_{i\in S_k} d(X^i, \mu_k)^2\) où:
+					\item<2-> Pour chaque sous-ensemble \(S_k\), on définit la quantité
+						\begin{equation}
+							\sum_{i\in S_k} d(X^i, \mu_k)^2
+						\end{equation}
+					 où:
 						\begin{itemize}
 							\item<3-> \(d: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}_+\) représente une distance: dans tout ce qui suit \(d(x, y) = \lVert x - y \rVert\);
 							\item<3-> \(\mu_k\) est le barycentre de \(S_k\): \( \mu_k \triangleq \frac{1}{\vert S_k \vert}.\sum_{i\in S_k} X^i\).
 						\end{itemize}
-					\item<4-> Cette quantité exprime la variance intraclasse.
+					\item<4-> Cette quantité exprime la ``variance intraclasse'' de l'ensemble \(S_k\).
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{Variance intraclasse}
+			\begin{frame}{Pourquoi le nom ``variance intraclasse''?}
 				\begin{itemize}
-					\item<1-> On suppose que la variable aléatoire \(Z: \Omega \rightarrow \mathbb{R}^d\) est telle que \(\mathbb{E}(Z) < \infty\) et \(\mathbb{E}(\lVert Z \rVert^2) < \infty\).
-					\item<2-> \(\big(Z^i\big)_{i=1,\dots,p}\) sont \(p\) réaisations indépendentes et identiquement distribuées de même loi que \(Z\).
+					\item<1-> Soit \(Z: \Omega \rightarrow \mathbb{R}^d\) une variable aléatoire telle que \(\mathbb{E}(Z) < \infty\) et \(\mathbb{E}(\lVert Z \rVert^2) < \infty\).
+					\item<2-> Soient \(\big(Z^i\big)_{i=1,\dots,p}\) \(p\) réalisations indépendentes et identiquement distribuées (i.i.d) de même loi que \(Z\).
 					\item<3-> Par définition, la variance empirique de \(\big(Z^i\big)_{i=1,\dots,p}\) est:
 						\begin{equation}
 							\text{Var}_{emp}(\big(Z^i\big)_{i=1,\dots,p}) \triangleq \frac{1}{p} . \sum_{i=1}^{p} \lVert Z^i - \bar Z \rVert^2 \underset{p\infty}{\longrightarrow} \text{Var}(Z) = \mathbb{E}(\lVert Z - \mathbb{E}(Z) \rVert^2)
 						\end{equation}
 						où \(\bar Z := \frac{1}{p}.\sum_{i=1}^{p} Z^i \underset{p\infty}{\longrightarrow} \mathbb{E}(Z)\).
-					\item<4-> La disparité intraclasse vérifie donc bien évidemment:
+					\item<4-> Si les instances dans \(S_k\) sont considérées des réalisations de la même loi de probabilité, on voit que la disparité intraclasse vérifie:
 						\begin{equation}
 							\sum_{i\in S_k} \lVert X^i - \mu_k \rVert^2 = \vert S_k \vert . \text{Var}_{emp}(S_k)
 						\end{equation}
 						On voit bien que cette quantité exprime la variance des instances qui appartient au cluster \(S_k\).
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{Variance intraclasse}
+			\begin{frame}{Variance intraclasse: mesure d'hétérogéniété}
 				\begin{itemize}
 					\item<1-> On remarque aussi que:
 						\only<1>{
@@ -321,41 +276,45 @@
 						\begin{equation}
 							I_W(\big(S_k\big)_{k = 1, \dots, K}) \triangleq \sum_{k= 1}^{K} \sum_{i\in S_k} d(X^i, \mu_k)^2
 						\end{equation}
-					\item<2-> Pour le cas particulier de \(K=1\), on vérifie \(\big(S_k\big)_{k = 1, \dots, K} = (\{1,\dots,n\})\). On définit donc l'inertie totale des instances:
+					\item<2-> Pour le cas particulier de \(A=1\), on vérifie \(\big(S_k\big)_{k = 1} = (\{1,\dots,n\})\). On définit donc l'inertie totale des instances:
 						\begin{equation}
-							I_T \triangleq \sum_{i=1}^{n} d(X^i, \mu)^2
+							I_T \triangleq I_W(\big(S_k\big)_{k = 1}) = \sum_{i=1}^{n} d(X^i, \mu)^2
 						\end{equation}
 						avec \(\mu = \frac{1}{n} . \sum_{i=1}^{n} X^i\).
 				\end{itemize}
 			\end{frame}
 
-			\begin{frame}[allowframebreaks]{Inertie totale}
-				\begin{align*}
-					I_T &= \sum_{i=1}^{n} \lVert X^i - \mu \rVert^2\\
-						&= \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu \rVert^2\\
-						&= \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu_k \rVert^2 + \lVert \mu_k - \mu \rVert^2 + 2. \langle X^i-\mu_k, \mu_k-\mu \rangle\\
-						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \sum_{i\in S_k} \langle X^i-\mu_k, \mu_k-\mu \rangle\\
-						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \sum_{i\in S_k} (X^i-\mu_k), \mu_k-\mu \rangle
-				\end{align*}
-				\begin{align*}
-					I_T &= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \sum_{i\in S_k} X^i - \vert S_k \vert . \mu_k, \mu_k-\mu \rangle\\
-						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \sum_{i\in S_k} X^i - \vert S_k \vert . \frac{1}{\vert S_k \vert} . \sum_{i\in S_k} X^i, \mu_k-\mu \rangle\\
-						&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2
-				\end{align*}
+			\begin{frame}{Inertie totale}
+				\only<1>{
+					\scriptsize
+					\begin{align*}
+						I_T &= \sum_{i=1}^{n} \lVert X^i - \mu \rVert^2\\
+							&= \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu \rVert^2\\
+							&= \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu_k \rVert^2 + \lVert \mu_k - \mu \rVert^2 + 2. \langle X^i-\mu_k, \mu_k-\mu \rangle\\
+							&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \sum_{i\in S_k} \langle X^i-\mu_k, \mu_k-\mu \rangle\\
+							&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert . \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \sum_{i\in S_k} (X^i-\mu_k), \mu_k-\mu \rangle\\
+							&= I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert . \lVert \mu_k - \mu \rVert^2 + 2 . \sum_{k= 1}^{K} \langle \cancelto{0}{\sum_{i\in S_k} X^i - \vert S_k \vert} . \mu_k, \mu_k-\mu \rangle\\
+					\end{align*}
+				}
+				\uncover<2>{
+					\begin{equation}
+						I_T = I_W(\big(S_k\big)_{k = 1, \dots, K}) + \sum_{k= 1}^{K} \vert S_k \vert . \lVert \mu_k - \mu \rVert^2
+					\end{equation}
+				}
 			\end{frame}
 
 			\begin{frame}{Inertie interclasse}
 				\begin{itemize}
 					\item<1-> On définit ainsi l'inertie interclasse:
 						\begin{equation}
-							I_B(\big(S_k\big)_{k = 1, \dots, K}) = \sum_{k= 1}^{K} \vert S_k \vert \lVert \mu_k - \mu \rVert^2
+							I_B(\big(S_k\big)_{k = 1, \dots, K}) = \sum_{k= 1}^{K} \vert S_k \vert . \lVert \mu_k - \mu \rVert^2
 						\end{equation}
 						on a donc:
 						\begin{equation}
 							I_T = I_B(\big(S_k\big)_{k = 1, \dots, K}) + I_W(\big(S_k\big)_{k = 1, \dots, K})
 						\end{equation}
-					\item<2-> Cette quantité \(I_B\) exprime la disparité entre les barycentre de cluster et le barycentre de tous les échantillons. Plus elle est grande, plus l'hétérogénéité de la partition est grande.
-					\item<3-> Puisque \(I_T\) est constante, minimiser la disparité intra-cluster \(I_W\) revient à maximiser \(I_B\).
+					\item<2-> Cette quantité \(I_B\) exprime la disparité entre les barycentres des clusters et le barycentre de tous les échantillons. Plus elle est grande, plus l'hétérogénéité de la partition est grande.
+					\item<3-> \(I_T\) est constante, minimiser la disparité intra-cluster \(I_W\) revient à maximiser \(I_B\).
 					\item<4-> Trouver la meilleure partition revient à résoudre le problème:
 						\begin{equation}
 							\arg \min_{\substack{K = 1,\dots,n \\ \big(S_k\big)_{k = 1, \dots, K}}} I_W(\big(S_k\big)_{k = 1, \dots, K})
@@ -365,7 +324,7 @@
 
 			\begin{frame}{Combinatoire}
 				\begin{itemize}
-					\item<1-> A premier abord, on peut essayer toutes les partitions possibles.
+					\item<1-> Au premier abord, on peut essayer toutes les partitions possibles.
 					\item<2-> Pour \(n\) instances et \(K\) classes, le nombre totale de partition~\cite{StirlingWiki}:
 						\begin{equation}
 							S_{n,K} \triangleq \left\{ {n \atop k}\right\} = \frac{1}{k!}\sum_{j=0}^{k} (-1)^{k-j} \binom{k}{j} j^n
@@ -392,7 +351,7 @@
 							\item<5-> \(D_b: (A, B) \mapsto \frac{1}{\vert A \vert.\vert B \vert}\sum_{a\in A, b\in B} d(a,b)\)
 							\item<6-> \dots
 						\end{itemize}
-					\item<7-> On regroupe (\textit{resp.} divise) les clusters qui vérifient le minimum (\textit{resp.} maximum) de distance~\cite{hastie2009unsupervised,ward1963hierarchical}.
+					\item<7-> On fusionne (\textit{resp.} coupe) les clusters pour lesquels la distance est minimale (\textit{resp.} maximale)~\cite{hastie2009unsupervised,ward1963hierarchical}.
 				\end{itemize}
 			\end{frame}
 			\begin{frame}{Exemple}
@@ -405,18 +364,18 @@
 				\begin{algorithm}[H]
 					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
 					\KwData{La métrique de cluster: \(D: 2^{\{X^i: i=1,\dots,n\}} \times 2^{\{X^i: i=1,\dots,n\}} \rightarrow \mathbb{R}_+\)}
-					\KwData{Le nombre d'itération maximale: \(I\)}
-					\KwData{Le nombre de clusters: \(K\)}
+					\KwData{Le nombre d'itération maximale: \(T\)}
+					\KwData{Le nombre de clusters souhaité: \(K\)}
 					
-					\KwResult{Le nombre de clusters: \(cl\) et la partition: \(\big(S_k\big)_{k=1,\dots,cl}\)}
-					\(t := 0\), \(S^t_k:=\{X^k\}, \quad \forall k = 1,\dots,n\), \(cl=n\)\;
-					\While{\(cl > K\) and \(t < I\)}{
+					\KwResult{Le nombre de clusters trouvé: \(cl\) et la partition: \(\big(S_k\big)_{k=1,\dots,cl}\)}
+					\(t := 0\), \(S^t_k:=\{X^k\}, \quad \forall k = 1,\dots,n\), \(cl:=n\)\;
+					\While{\(cl > K\) and \(t < T\)}{
 						\(t := t + 1\)\;
-						Couples à regrouper: \(\big\{c_1, \dots, c_{p_t}\big\} := \arg\min_{\substack{s=1,\dots,cl\\t=1,\dots,cl}} D(S^{t-1}_s, S^{t-1}_t)\)\;
-						Ensembles à regrouper: \(\{e_1,\dots,e_{q_t}\} := \big\{\bigcup_{\substack{k=1,\dots,p_t\\c_j\cup c_k \neq \emptyset}} c_k: j=1,\dots,p_t\big\}\)\;
+						Couples à regrouper: \(\big\{c_1, \dots, c_{p_t}\big\} := \arg\min_{\substack{s=1,\dots,cl\\l=1,\dots,cl}} D(S^{t-1}_s, S^{t-1}_l)\)\;
+						Ensembles à regrouper: \(\{e_1,\dots,e_{q_t}\} := \big\{\bigcup_{\substack{k=1,\dots,p_t\\c_j\cap c_k \neq \emptyset}} c_k: j=1,\dots,p_t\big\}\)\;
 						Regroupement: \(\forall k=1,\dots,q_t \quad S^t_k := \bigcup_{j\in e_k} S^{t-1}_j\)\;
 						Cluster inchangés: \(\big\{S^t_k: k=q_t+1,\dots,cl\} := \{S^{t-1}_h: h\in\{1,\dots,cl\} \setminus \bigcup_{j=1}^{q_t} e_j \big\}\)\;
-						Nombre de clusters: \(cl:= cl + q_t - \sum_{j=1}^{q_t} \vert e_i\vert\)\;
+						Nombre de clusters: \(cl:= cl + q_t - \sum_{j=1}^{q_t} \vert e_j\vert\)\;
 					}
 				\end{algorithm}
 			\end{frame}
@@ -424,7 +383,7 @@
 		\subsection{Clustering avec partitionnement}
 			\begin{frame}{K-means}
 				\begin{itemize}
-					\item<1-> On suppose que \(K\) le nombre de classes possibles est fixe.
+					\item<1-> On suppose que \(K\) le nombre de classes autorisées est fixé.
 					\item<2-> On rappelle le problème d'optimisation à résoudre dans ce cas:
 						\begin{equation}
 							\arg \min_{\big(S_k\big)_{k = 1, \dots, K}} \sum_{k= 1}^{K} \sum_{i\in S_k} \lVert X^i - \mu_k\rVert^2
@@ -434,28 +393,29 @@
 					\item<5-> Il faut trouver une heuristique qui est linéaire dans la plupart des cas.
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{Algorithme de Loyd}
+			\begin{frame}{Algorithme de Lloyd}
 				\begin{algorithm}[H]
 					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
-					\KwData{Le nombre d'itération maximale: \(I\)}
+					\KwData{Le nombre d'itération maximale: \(T\)}
 					\KwData{Le nombre de clusters: \(K\)}
 
 					\KwResult{La partition: \(\big(S_k\big)_{k=1,\dots,K}\)}
 					\(t := 0\), \(\forall k = 1,\dots,K \quad \mu^t_k := X^{random(\{1,\dots,n\})}\)\;
-					\Do{\(t < I\) and \(\forall k=1,\dots,K \quad \Delta_t\mu_k \neq 0\)}{
+					\Do{\(t < T\) and \(\forall k=1,\dots,K \quad \Delta_t\mu_k \neq 0\)}{
 						\(t := t + 1\)\;
 						Assignement: \(\forall k = 1,\dots,K \quad S_k := \arg \min_{i=1,\dots,n} \lVert X^i - \mu^{t - 1}_k \rVert\)\;
 						Mise à jour: \(\forall k = 1,\dots,K \quad \mu^t_k := \frac{1}{\vert S_k \vert}.\sum_{j \in S_k} X^j\)\;
 					}
 				\end{algorithm}
 			\end{frame}
-			\begin{frame}{K-means}
+			\begin{frame}{K-moyennes}
 				\begin{itemize}
 					\item[\color{green}+]<1-> Algorithme simple à implémenter;
-					\item[\color{green}+]<1-> En général, faible complexité en temps: \(O(n.d.K.I)\);
+					\item[\color{green}+]<1-> En général, faible complexité en temps: \(O(n.d.K.I)\)~\cite{lloyd1982least};
 					\item[\color{red}-]<2-> Convergence vers un minimum local;
 					\item[\color{red}-]<2-> Nécessité de la connaissance \textit{a priori} de \(K\);
-					\item[\color{red}-]<2-> Inadéquation de la métrique Euclidienne.
+					\item[\color{red}-]<2-> Inadéquation de la métrique Euclidienne;
+					\item[\color{red}-]<2-> Difficile de passer à l'échelle.
 				\end{itemize}
 			\end{frame}
 			\begin{frame}{ISODATA}
@@ -465,8 +425,8 @@
 					\item<3-> Le critère d'arrêt repose sur:
 						\begin{itemize}
 							\item<3-> La moyenne de la distance entre centroïdes passe en dessous d'un seuil;
-							\item<4-> La moyenne du changement de l'inertie intraclasse est en dessous d'un seuil;
-							\item<5-> Le nombre maximale des itérations est atteint.
+							\item<4-> La moyenne du changement de l'inertie intraclasse passe en dessous d'un seuil;
+							\item<5-> Le nombre maximal d'itérations est atteint.
 						\end{itemize}
 				\end{itemize}
 			\end{frame}
@@ -484,9 +444,9 @@
 					\(t := 0\), \(K^t := random(\{1,\dots,n\})\), \(\forall k = 1,\dots,K^t \quad \mu^t_k := X^{random(\{1,\dots,n\})}\)\;
 					\Do{\(t < I\) and \(\max_{\substack{k=1,\dots,K\\l=1,\dots,K}} d(\mu^t_l, \mu^t_k) > T_c \) and \(\Delta_t I_W(\big(S^t_k\big)_{k = 1, \dots, K}) > T_i\)}{
 						\(t := t + 1\)\;
-						Assignement: \(\forall k = 1,\dots,K^{t-1} \quad S^t_k := \arg \min_{i=1,\dots,n} \lVert X^i - \mu^{i - 1}_k \rVert\)\;
+						Assignement: \(\forall k = 1,\dots,K^{t-1} \quad S^t_k := \arg \min_{i=1,\dots,n} \lVert X^i - \mu^{t - 1}_k \rVert\)\;
 						Regroupement: \(R := \{\bigcup_{\substack{l = 1,\dots,K^{t-1}\\ \lVert\mu_l - \mu_k\rVert \leq s_g}} S^{t-1}_l: k=1,\dots,K^{t-1}\}\)\;
-						Eclatement: \(\{S_1, \dots, S_{K^t}\} := \bigcup\{eclate(r): r \in R\}\)\;
+						Eclatement: \(\{S_1, \dots, S_{K^t}\} := \bigcup\{eclate(r, s_e): r \in R\}\)\;
 						Mise à jour: \(\forall k = 1,\dots,K^t \quad \mu^t_k := \frac{1}{\vert S^t_k \vert}.\sum_{j \in S^t_k} X^j\)\;
 					}
 				\end{algorithm}
@@ -498,10 +458,62 @@
 					\item[\color{red}-]<2-> Convergence vers un minimum local: généralement \(K = 1\);
 					\item[\color{red}-]<2-> Nécessité de la connaissance de plusieur seuils;
 					\item[\color{red}-]<2-> Inadéquation de la métrique Euclidienne.
+					\item[\color{red}-]<2-> Difficile de passer à l'échelle.
 				\end{itemize}
 			\end{frame}
 
 	\section{Algorithmes supervisés}
+		\subsection{Illustration}
+			\begin{frame}{Apprentissage supervisé}
+				Dans le cas supervisé:
+				\begin{itemize}
+					\item<1-> Des classes sont définies \textit{a priori}: \(\{1,\dots, C\}\);
+					\item<2-> Les observations sont divisées en deux ensembles:
+						\begin{itemize}
+							\item<3-> L'ensemble d'entraînement: chaque observation \(X^i, \quad \forall i=1,\dots,n_{train}\) a une classe \(Y^i \in \{1,\dots, C\}\);
+							\item<4-> L'ensemble de test: des observations \(X^i, i=n_{train},\dots,n\) pour lesquelles les classes \(Y^i, i=n_{train},\dots,n\) sont inconnues.
+						\end{itemize}
+					\item<5-> On ``apprend'' un modèle sur l'ensemble d'entraînement afin de prédire les classes \(Y^i, i=n_{train},\dots,n\) à partir des attributs \(X^i, i=n_{train},\dots,n\) seulement.
+				\end{itemize}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				\begin{figure}[H]
+					\includegraphics[height=.55\textheight]{images/samples/shapes_supervised}
+					\caption*{Exemple de problème d'apprentissage supervisé: les classes (formes géométriques) sont données.}
+				\end{figure}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				Comment choisir ses attributs pour représenter chaque observation sous forme de vecteur?
+				\begin{itemize}
+					\item<2-> nombre de côtés;
+					\item<3-> nombre de sommets;
+					\item<4-> convexité;
+					\item<5-> symmetrie par rotation;
+					\item<6-> \dots;
+				\end{itemize}
+				\uncover<7->{
+					Pour une observation, dont la forme (classe) est un carré, le vecteur d'attributs s'écrit:
+					\[\begin{pmatrix}
+						4\\
+						4\\
+						True\\
+						False\\
+						\vdots
+					\end{pmatrix}\]
+				}
+			\end{frame}
+
+			\begin{frame}{Apprentissage supervisé}
+				\begin{figure}[H]
+					\begin{center}
+						\includestandalone[mode=buildnew, height=.5\textheight]{scatter_gender_dataset}
+						\caption*{\tiny Exemple de problème de apprentissage supervisé: 2 attributs et 2 classes.}
+					\end{center}
+				\end{figure}
+			\end{frame}
+
 		\subsection{Formalisation}
 			\begin{frame}{Fonction de décision}
 				\begin{itemize}
