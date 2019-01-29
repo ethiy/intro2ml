@@ -394,6 +394,7 @@
 				\end{itemize}
 			\end{frame}
 			\begin{frame}{Algorithme de Lloyd}
+				
 				\begin{algorithm}[H]
 					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
 					\KwData{Le nombre d'itération maximale: \(T\)}
@@ -401,7 +402,7 @@
 
 					\KwResult{La partition: \(\big(S_k\big)_{k=1,\dots,K}\)}
 					\(t := 0\), \(\forall k = 1,\dots,K \quad \mu^t_k := X^{random(\{1,\dots,n\})}\)\;
-					\Do{\(t < T\) and \(\forall k=1,\dots,K \quad \Delta_t\mu_k \neq 0\)}{
+					\Do{\(t < T\) and \(\exists k \quad \Delta_t\mu_k \neq 0\)}{
 						\(t := t + 1\)\;
 						Assignement: \(\forall k = 1,\dots,K \quad S_k := \arg \min_{i=1,\dots,n} \lVert X^i - \mu^{t - 1}_k \rVert\)\;
 						Mise à jour: \(\forall k = 1,\dots,K \quad \mu^t_k := \frac{1}{\vert S_k \vert}.\sum_{j \in S_k} X^j\)\;
