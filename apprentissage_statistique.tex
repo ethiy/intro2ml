@@ -9,7 +9,7 @@
 \usepackage{multirow}
 
 \usepackage{graphicx}
-\usepackage{subfig}
+\usepackage{subcaption}
 \usepackage{floatrow}
 \captionsetup{labelsep=period}
 
@@ -240,11 +240,11 @@
 							\text{Var}_{emp}(\big(Z^i\big)_{i=1,\dots,p}) \triangleq \frac{1}{p} . \sum_{i=1}^{p} \lVert Z^i - \bar Z \rVert^2 \underset{p\infty}{\longrightarrow} \text{Var}(Z) = \mathbb{E}(\lVert Z - \mathbb{E}(Z) \rVert^2)
 						\end{equation}
 						où \(\bar Z := \frac{1}{p}.\sum_{i=1}^{p} Z^i \underset{p\infty}{\longrightarrow} \mathbb{E}(Z)\).
-					\item<4-> Si les instances dans \(S_k\) sont considérées des réalisations de la même loi de probabilité, on voit que la disparité intraclasse vérifie:
+					\item<4-> On considère les instances dans \(S_k\) comme réalisations d'une même loi de probabilité \(X_k\). On vérifie que:
 						\begin{equation}
-							\sum_{i\in S_k} \lVert X^i - \mu_k \rVert^2 = \vert S_k \vert . \text{Var}_{emp}(S_k)
+							V(S_k) = \sum_{i\in S_k} \lVert X^i - \mu_k \rVert^2 = \vert S_k \vert . \text{Var}_{emp}(X_k)
 						\end{equation}
-						On voit bien que cette quantité exprime la variance des instances qui appartient au cluster \(S_k\).
+						On voit bien que cette quantité est liée à la variance des instances qui appartient au cluster \(S_k\).
 				\end{itemize}
 			\end{frame}
 			\begin{frame}{Variance intraclasse: mesure d'hétérogéniété}
@@ -267,6 +267,8 @@
 							\end{equation}
 						}
 					\item<3-> Cette équation lie, proportionellement, le premier terme décrivant l'hétérogénéité de l'ensemble \(S_k\) avec le deuxième qui exprime la variance intraclasse.
+					\item<4-> Le premier terme implique \(\frac{\vert S_k \vert.(\vert S_k \vert - 1)}{2}\) comparaisons alors que la variance intraclasse demande \(\big(\overbrace{\vert S_k \vert + 1}^{calcul\ de\ la\ moyenne}\big) + \big(\overbrace{\vert S_k \vert}^{comparaisons}\big)\).
+					\item<5-> Calculer la variance intraclasse est plus efficace que de calculer la disparité de couples deux à deux, tout en exprimant la même information.
 				\end{itemize}
 			\end{frame}
 
@@ -356,8 +358,19 @@
 			\end{frame}
 			\begin{frame}{Exemple}
 				\begin{figure}[H]
-					\includegraphics[width=.8\textwidth]{images/samples/hierchical_clustering.png}
-					\caption*{Exemple de clustering hiérarchique}
+					\begin{center}
+						\begin{subfigure}[t]{0.49\textwidth}
+							\centering
+							\includestandalone[mode=buildnew, width=.7\textwidth]{hierchical_clustering_sample}
+							\caption*{Espace d'attributs.}
+						\end{subfigure}
+						\begin{subfigure}[t]{0.49\textwidth}
+							\centering
+							\includestandalone[mode=buildnew, width=.7\textwidth]{hierchical_clustering_tree}
+							\caption*{Arbre de clustering avec la métrique \(D_m\).}
+						\end{subfigure}
+					\end{center}
+					\caption*{Exemple de clustering hiérarchique: A la première itération on regroupe les singletons \(\{1\}\), \(\{2\}\) et \(\{3\}\) ainsi que \(\{4\}\) et \(\{5\}\) qui ont vérifie tous une distance minimale de 1. A la deuxième itération, on fusionne \(\{1, 2, 3\}\) et \(\{4, 5\}\) qui vérifie la distance minimale de \(\sqrt{5}\). A la troisième on fusionne \(\{6\}\) et \(\{7\}\) qui minimise la métrique \(D_m\) qui prend la valeur 5.}
 				\end{figure}
 			\end{frame}
 			\begin{frame}{Algorithme}
@@ -381,7 +394,7 @@
 			\end{frame}
 
 		\subsection{Clustering avec partitionnement}
-			\begin{frame}{K-means}
+			\begin{frame}{K-moyennes}
 				\begin{itemize}
 					\item<1-> On suppose que \(K\) le nombre de classes autorisées est fixé.
 					\item<2-> On rappelle le problème d'optimisation à résoudre dans ce cas:
@@ -394,7 +407,6 @@
 				\end{itemize}
 			\end{frame}
 			\begin{frame}{Algorithme de Lloyd}
-				
 				\begin{algorithm}[H]
 					\KwData{Les observations: \(\big(X^i\big)_{i=1,\dots,n}\)}
 					\KwData{Le nombre d'itération maximale: \(T\)}
@@ -404,10 +416,19 @@
 					\(t := 0\), \(\forall k = 1,\dots,K \quad \mu^t_k := X^{random(\{1,\dots,n\})}\)\;
 					\Do{\(t < T\) and \(\exists k \quad \Delta_t\mu_k \neq 0\)}{
 						\(t := t + 1\)\;
-						Assignement: \(\forall k = 1,\dots,K \quad S_k := \arg \min_{i=1,\dots,n} \lVert X^i - \mu^{t - 1}_k \rVert\)\;
+						Assignement: \(\forall k = 1,\dots,K \quad S_k := \{i \in \{1, \dots, n\}: k = \arg \min_{k = 1,\dots,K} \lVert X^i - \mu^{t - 1}_k \rVert\}\)\;
 						Mise à jour: \(\forall k = 1,\dots,K \quad \mu^t_k := \frac{1}{\vert S_k \vert}.\sum_{j \in S_k} X^j\)\;
 					}
 				\end{algorithm}
+			\end{frame}
+			\begin{frame}{Algorithme de Lloyd}
+				\begin{itemize}
+					\item<1-> Le résultat de l'algorithme change selon l'initialisation.
+					\item<2-> Une mauvaise initialisation ne permet pas de converger vers solution stable.
+					\item<3-> On parle de convergence si \(\exists t < T,  \forall k = 1,\dots,K \quad \Delta_t\mu_k = 0\).
+					\item<3-> La partition donnée dans le case de convergence permet de minimiser localement l'inértie intraclasse.
+					\item<4-> Le minimum local n'est pas forcément un minimum global: i.e. On peut converger, avec deux initialisations différentes, vers deux solutions stables différentes \(\big(S_k\big)_{k=1,\dots,K}\) et \(\big(T_k\big)_{k=1,\dots,K}\) avec une inertie intraclasse différentes: \(I_W(\big(S_k\big)_{k=1,\dots,K}) \neq I_W(\big(T_k\big)_{k=1,\dots,K})\)
+				\end{itemize}
 			\end{frame}
 			\begin{frame}{K-moyennes}
 				\begin{itemize}
