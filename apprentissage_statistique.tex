@@ -485,7 +485,7 @@
 			\end{frame}
 
 	\section{Algorithmes supervisés}
-		\subsection{Illustration}
+		\subsection{Définition}
 			\begin{frame}{Apprentissage supervisé}
 				Dans le cas supervisé:
 				\begin{itemize}
@@ -545,14 +545,14 @@
 						D: \mathbb{R}^d &\rightarrow \{1, \dots, C\} \\
 						x &\mapsto D(x)
 					\end{align*}
-					\item<3-> On définit le regret, ou risque, d'une fonction de décision $D$ par:
+					\item<3-> On définit le \textbf{regret}, ou \textbf{risque}, d'une fonction de décision $D$ par:
 					\begin{equation}
 						R(D) \triangleq \mathbb{E}_{X,Y}(\mathbb{1}(D(X)\neq Y))
 					\end{equation}
 					\item<4-> Cette fonction calcule la mesure de l'espace d'attributs où $D(x) \neq y$:
 					\begin{align*}
 						R(D) &= \mathbb{P}(\{D(X)\neq Y\})\\
-							&= \sum_{y\in \{-1, 1\}} \int_{x \in \mathbb{R}^d} \mathbb{1}(D(x)\neq y) p(dx, y)
+							&= \sum_{y = 1, \dots, C} \int_{x \in \mathbb{R}^d} \mathbb{1}(D(x)\neq y) p(dx, y)
 					\end{align*}
 				\end{itemize}
 			\end{frame}
@@ -570,9 +570,17 @@
 						\begin{equation}
 							\widehat D_n \triangleq \arg\min_{D \in \mathscr{F}} R_n(D)
 						\end{equation}
-					\item<3-> Exemple d'ensemble de recherche: \(\mathscr{F} = \{1, \dots, C\}^{\mathbb{R}^d}\) l'ensemble de toute les fonctions possibles.
-					\item<4-> Ce dernier choix est trop naif. En effet, on défini la fonction de décision \(D_{naïve}: x \mapsto \sum_{i=1,\dots,n} Y^i . \delta_{X^i}(x) + \mathbb{1}_{x \notin \{X^i, \forall i=1,\dots,n\}}\). On observe que \(R_n(D_{naïve}) = 0\).
+					\item<3-> Exemple d'ensemble de recherche: \(\mathscr{F} = \{1, \dots, C\}^{\mathbb{R}^d}\) l'ensemble de toutes les fonctions possibles.
+					\item<4-> Ce dernier choix est trop naïf. En effet, on défini la fonction de décision \(D_{na\"{i}ve}: x \mapsto \sum_{i=1,\dots,n} Y^i . \delta_{X^i}(x) + \mathbb{1}_{x \notin \{X^i, \forall i=1,\dots,n\}}\). On observe que \(R_n(D_{naïve}) = 0\).
 				\end{itemize}
+			\end{frame}
+			\begin{frame}{Regret: mesure d'erreur}
+				\begin{center}
+					\begin{figure}[H]
+						\includegraphics[width=.8\textwidth]{images/samples/illustration_difference_separator.png}
+						\caption*{Illustration de l'espace \(D(X)\neq Y\): où \(Y \in \{0, 1\}\) et \(X \in \mathbb{R}^2\).}
+					\end{figure}	
+				\end{center}
 			\end{frame}
 			\begin{frame}{Sur/Sous apprentissage}
 				\begin{itemize}
@@ -581,26 +589,29 @@
 							R(\widehat D_n) - \min_{D \in \{1, \dots, C\}^{\mathbb{R}^d}} R(D) = \overbrace{R(\widehat D_n) - R(D^*)}^{la\ variance} + \overbrace{R(D^*) - \min_{D \in \{1, \dots, C\}^{\mathbb{R}^d}} R(D)}^{le\ biais}
 						\end{equation}
 					\item<2-> Le terme de variance exprime la différence, purement stochastique, entre l'optimum \(D^*\) conditionné dans l'ensemble \(\mathscr{F}\) et l'optimum empirique;
-					\item<3-> le terme de biais exprime la différence entre l'optimum \(D^*\) par rapport à la fonction de décision optimale.
+					\item<3-> le terme de biais exprime la différence entre l'optimum \(D^*\) par rapport à la vérité terrain.
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{Sur/Sous apprentissage: le compromis}
+			\begin{frame}[plain]{Sur/Sous apprentissage: le compromis}
 				\begin{figure}[H]
-					\includestandalone[mode=buildnew, width=.5\textwidth]{scatter_separators}
-					\caption*{Illustration des cas de sur/sous apprentissage: $\mathscr{S}_1$ compromis de séparation, $\mathscr{S}_2$ surapprentissage et $\mathscr{S}_3$ sousapprentissage.}
+					\begin{center}
+						\includestandalone[mode=buildnew, width=.7\textwidth]{scatter_separators}
+						\vspace{-1em}
+						\caption*{Illustration des cas de sur/sous apprentissage: $\mathscr{S}_1$ compromis de séparation, $\mathscr{S}_2$ surapprentissage et $\mathscr{S}_3$ sousapprentissage.}	
+					\end{center}
 				\end{figure}
 			\end{frame}
 			\begin{frame}{Discriminatif vs Génératif}
 				\begin{itemize}
-					\item<1-> On sait modéliser la distribution des classes $p(y)$ et celle des instances selon la classe $p(x\vert y)$ $\longrightarrow$ méthode générative,
+					\item<1-> On sait modéliser la distribution des classes $p(y)$ et celle des instances selon la classe $p(x\vert y)$ $\Longrightarrow$ méthode générative,
 						\begin{itemize}
-							\item<2-> Exemple: On s'interresse à la détection de sexe selon deux mesures: taille et poids.
+							\item<2-> Exemple: On s'intéresse à la détection de sexe selon deux mesures: taille et poids.
 							\item<3-> On suppose que la répartition des sexes est équilibrée dans le monde $p(y=1) = p(y=0) = \frac{1}{2}$;
-							\item<4-> la répartition des mesures suivent des lois gaussiennes $X\vert Y=y \sim \mathscr{N}(m_y, \sigma_y)$.
+							\item<4-> Les répartitions des mesures selon les classes suivent des lois gaussiennes $X\vert Y=y \sim \mathscr{N}(m_y, \sigma_y)$.
 						\end{itemize}
-					\item<5-> On n'a aucune connaissance \textit{a priori}. On cherche à apprendre un modèle de $p(y \vert x)$ $\longrightarrow$ méthode discriminative.
+					\item<5-> On n'a aucune connaissance \textit{a priori}. On cherche à apprendre un modèle de $p(y \vert x)$ $\Longrightarrow$ méthode discriminative.
 				\end{itemize}
-			\end{frame}	
+			\end{frame}
 		\subsection{Méthodes génératives}
 			\begin{frame}{Règle de Bayes}
 				\begin{equation}
@@ -609,8 +620,8 @@
 				\begin{itemize}
 					\item $p(y)$ : probabilité d'appartenir à la classe $y$.
 					\item $p(x)$ : probabilité que l'attribut $X=x$.
-					\item $p(x \vert y)$  : probabilité que $X=x$ pour la classe $y$.
-					\item $p(y \vert x)$  : probabilité d'appartenir à la classe $y$ sachant que $X=x$.
+					\item $p(x \vert y)$  : probabilité que la réalisation de $X$ soit $x$, sachant qu'il est dans la classe $y$.
+					\item $p(y \vert x)$  : probabilité que la classe est $y$, sachant que la réalisation de $X$ est $x$.
 				\end{itemize}
 			\end{frame}
 			\begin{frame}{La classe estimée}
@@ -658,212 +669,216 @@
 					\item Application numérique pour \(X=(pluie, chaud,\)\textit{élevée}\(, non)\): 
 						\[p(Tennis = oui \vert X) = p(X\vert Tennis = oui) . p(Tennis = oui) \approx 0.010582\]
 						\[p(Tennis = non \vert X) = p(X\vert Tennis = non) . p(Tennis = non) \approx \boldmath 0.018286\]
-						Donc quand il pleut, il fait chaud, la température est élevée et il n'y a pas de vent, on ne joue pas.
+						Donc quand quand il pleut, qu'il fait chaud, que la température est élevée et il n'y a pas de vent, on ne joue pas.
 				\end{itemize}
 			\end{frame}
-		\subsection{Méthodes discriminative}
-			\begin{frame}{Méthodes de centroïdes}
-				\begin{itemize}
-					\item<1-> On s'inspire du clustering: On assigne la classe dont le centroïde est le plus proche.
-					\item<2-> On pose \(\mu_k = \frac{1}{\vert \{i\in\{1,\dots,n\}: Y^i = k\} \vert}.\sum_{\substack{i=1,\dots,n\\Y^i = k}} X^i\). On peut écrire:
-						\begin{equation}
-							D_{centroid}(x) \triangleq \arg \min_{k=1,\dots,C} \lVert x - \mu_k \rVert
-						\end{equation}
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Méthodes de centroïdes}
-				\begin{figure}[H]
-					\includestandalone[mode=buildnew, height=.5\textheight]{scatter_circles_class}
-					\caption*{Problème de la méthode de centroïde. Les deux classes sont cocentriques.}
-				\end{figure}
-			\end{frame}
-			\begin{frame}{k-NN}
-				\begin{itemize}
-					\item<1-> On choisit les \(k\) instances les plus proches de l'observation \(x\). On assigne à cette observation la classe majoritaire parmi les \(k\) classes de ces voisins.
-					\item<2-> Soit \(o_1,\dots,o_n\) les indices qui guarantissent: \(\lVert x - X^{o_1} \rVert \leq \lVert x - X^{o_2} \rVert \dots \leq \lVert x - X^{o_n} \rVert\). Les \(k\) plus proches voisins sont donc \(\{X^{o_1}, X^{o_2},\dots,X^{o_k}\}\).
-					\item<3-> On définit donc la fonction de décision du k-NN par:
-						\begin{equation}
-							D_{knn}(x) \triangleq \arg \max_{c=1,\dots,C} \sum_{i=1,\dots,k} \mathbb{1}_{Y^{o_i} = c}
-						\end{equation}
-					\item<4-> Plus k augmente, plus les frontières seront lisses.
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Arbres de décision}
-				\begin{figure}[H]
-					\includegraphics[width=.65\textwidth]{images/samples/example_dt_iris_dataset.png}
-					\caption*{Exemple d'arbre de décision appliquée à l'Iris dataset: 4 attributs (longueur de sépale, largeur de sépale, longuer de pétale et largeur de pétale) et 3 classes: (``Iris Setosa'', ``Iris Versicolour'', ``Iris Virginica'').}
-				\end{figure}
-			\end{frame}
-			\begin{frame}{Arbres de décision: construction}
-				\begin{itemize}
-					\item<1-> On commence par la racine: Toutes les instances sont présentes.
-					\item<2-> On choisit l'attribut et le seuil qui permettent de séparer le mieux en groupes homogènes les observations.
-					\item<3-> On répète la deuxième étape à chaque groupe jusqu'à:
-						\begin{itemize}
-							\item<4-> Atteindre un groupe pure: il contient que des observations ayant la même classe;
-							\item<5-> Atteindre un critère d'arrêt.
-						\end{itemize}
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Arbres de décision: critère d'arrêt}
-				Exemples:
-				\begin{itemize}
-					\item<1-> Nombre minimum d’observations par groupe.
-					\item<2-> Toutes les observations d’une branche sont de la même classe (feuille pure).
-					\item<3-> Degré de pureté maximale atteinte \(p\): \(\frac{\vert Y \vert}{\vert G\vert} \geq p\) où: \(Y\) est l'ensemble des instances de la classe majoritaire et \(G\) l'ensemble de toutes les observations dans le groupe en question. Le cas précédent est un cas particulier avec \(p = 1\).
-					\item<4-> Profondeur de l’arbre maximale atteinte.
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Mesure d'hétérogénéité}
-				\begin{itemize}
-					\item<1-> Soit \(S\) une famille (répétitvité possible) d'éléments. Dans notre cas, \(S := ((Y^i)_{i=1,\dots,n})\).
-					\item<2-> On définit \(p_k := \frac{\vert \big\{i \in \{1,\dots,n\}: Y^i = k\big\}\vert}{n}\) la probabilité empirique de la valeur \(k \in \{1,\dots,C\}\).
-					\item<3-> On désire mesurer son hétérogénéité par rapport au classes \(Y^i\). Soit \(H: S\mapsto H(S)\) une telle mesure.
-					\item<4-> Le cas le moins hétérogène est le cas \(\exists k_0 \forall k, p_k = \delta_{k_0}\). Dans ce cas, \(H(S)\) doit atteindre son minimum.
-					\item<5-> Le maximum de \(H\), par contre, est atteint dans le cas où toutes les valeurs de classes sont également probables: \(p_k = \frac{1}{C}, \quad \forall k=1,\dots,C\): le cas le plus hétérogène.
-					\item<6-> Exemples de telles mesures:
-						\begin{itemize}
-							\item L'entropie:
-								\begin{equation}
-									H_E \triangleq - \sum_{k=1}^C p_k . \ln(p_k)
-								\end{equation}
-							\item L'indice de Ginni:
-								\begin{equation}
-									H_G \triangleq \sum_{k=1}^C p_k(1-p_k) = 1 - \sum_{k=1}^C p_k^2
-								\end{equation}
-						\end{itemize}
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Mesure de qualité de séparation}
-				\begin{itemize}
-					\item<1-> Soit \(\big(S_k\big)_{k = 1, \dots, K}\) une \(K\)-partition de \(S\).
-					\item<2-> Une bonne séparation se traduit par un gain d'homogéniété après séparation: i.e. les sous-ensembles \(S_k\) sont moins hétérogène que l'ensemble d'origine.
-					\item<3-> On définit le gain de la partition \(\big(S_k\big)_{k = 1, \dots, K}\) par:
-						\begin{equation}
-							G\big((S_1, \dots, S_K)\big) \triangleq H(S) - \sum_{k=1}^K \frac{\vert S_k \vert}{\vert S \vert}H(S_k)
-						\end{equation}
-					\item<4-> Trois cas se précisent:
-						\begin{itemize}
-							\item<5-> \(G\big((S_1, \dots, S_K)\big) > 0\): la partition permet de bien séparer \(S\) de façon à avoir des sous-ensembles plus ``pures'';
-							\item<6-> \(G\big((S_1, \dots, S_K)\big) = 0\): la partition donne des des sous-ensembles aussi hétérogène que \(S\): on ne gagne rien;
-							\item<7-> \(G\big((S_1, \dots, S_K)\big) < 0\): la partition perd de ``pureté'' par rapport à \(S\).
-						\end{itemize}
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Mesure de qualité de séparation: arbres de décision}
-				\begin{itemize}
-					\item<1-> L'arbre naïf choisirait des critères sur \(Y^i\). Sauf que ces classes ne seront pas observables, en phase, de test.
-					\item<2-> On choisit le couple attribut \(X_c\) et seuil \(s\) le plus discriminant: les seules partitions possibles sont: \(S_1 := \{i \in S: X_c - s > 0\}\) ou \(S_2 := \{i \in S: X^c - s \leq 0\}\).
-					\item<3-> Dans ce cas, par abus de language, on note le gain de cette séparation: \(G(c, s) := G\big((S_1, S_2)\big)\)
-					\item<4-> Cela revient à résoudre le problème:
-						\begin{equation}
-							\arg \max_{\substack{c=1,\dots,d\\s \in \mathscr{S}_c}} G(c, s)
-						\end{equation}
-						où \(\mathscr{S}_c\) est l'ensemble de valeurs possibles pour l'attribut \(c\).
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Exemple: Tennis or no Tennis}
-				\begin{table}[H]
-					\begin{center}
-						\begin{tabular}{c c c c c}
-							\toprule
-							Temps (C) & Température (T) & Humidité (H) & Vent (V) & Tennis\\
-							\midrule
-							soleil & chaud & élevée & non & non\\
-							soleil & chaud & élevée & oui & non\\
-							couvert & chaud & élevée & non & oui\\
-							pluie & tiède & élevée & non & oui\\
-							pluie & froid & normale & non & oui\\
-							pluie & froid & normale & oui & non\\
-							couvert & froid & normale & oui & oui\\
-							soleil & tiède & élevée & non & non\\
-							soleil & froid & normale & non & oui\\
-							pluie & tiède & normale & non & oui\\
-							soleil & tiède & normale & oui & oui\\
-							couvert & tiède & élevée & oui & oui\\
-							couvert & chaud & normale & non & oui\\
-							\bottomrule
-						\end{tabular}
-					\end{center}
-				\end{table}
-			\end{frame}
-			\begin{frame}{Exemple: Tennis or no Tennis}
-				\begin{itemize}
-					\item<1-> Racine: 8 | 4 \(\longrightarrow H_G = 1 - \frac{1}{9} - \frac{4}{9} = \frac{4}{9}\) ;
-						\begin{itemize}
-							\small
-							\item c=C, s=couvert: \(\longrightarrow H_G (C > s) = 1 - \frac{9}{25} - \frac{4}{25} = \frac{12}{25}\) and \(H_G (C \leq s) = 1- frac{25}{49} - \frac{4}{49} = \frac{20}{49}\).
-								\(G(C, couvert) = \frac{4}{9} - \frac{1}{5} . \frac{12}{25} - \frac{1}{7} . \frac{12}{49} \approx 0.2901\)
-							\item c=C, s=pluie \(\longrightarrow H_G (C > s) = 1 - \frac{25}{64} - \frac{9}{64} = \frac{15}{32}\) and \(H_G (C \leq s) = 1- \frac{1}{16} - \frac{9}{16} = \frac{3}{8}\).
-								\(G(C, couvert) = \frac{4}{9} - \frac{1}{4} . \frac{3}{8} - \frac{1}{8} . \frac{15}{32} \approx 0.2921\)
-							\item c=T, s=tiède \(\longrightarrow H_G (C > s) = 1 - \frac{1}{4} - \frac{1}{4} = \frac{1}{2}\) and \(H_G (C \leq s) = 1- \frac{36}{64} - \frac{4}{64} = \frac{3}{8}\).
-								\(G(C, couvert) = \frac{4}{9} - \frac{1}{2} . \frac{1}{2} - \frac{1}{8} . \frac{3}{8} \approx 0.1476\)
-							\item c=T, s=froid \(\longrightarrow H_G (C > s) = 1 - \frac{25}{64} - \frac{9}{64} = \frac{15}{32}\) and \(H_G (C \leq s) = 1- \frac{1}{16} - \frac{9}{16} = \frac{3}{8}\).
-								\(G(C, couvert) = \frac{4}{9} - \frac{1}{4} . \frac{3}{8} - \frac{1}{8} . \frac{15}{32} \approx 0.2921\)
-							\item \textbf{c=H, s=normale} \(\longrightarrow H_G (C > s) = 1 - \frac{1}{4} - \frac{1}{4} = \frac{1}{2}\) and \(H_G (C \leq s) = 1- \frac{25}{36} - \frac{1}{36} = \frac{5}{18}\).
-								\(G(C, couvert) = \frac{4}{9} - \frac{1}{6} . \frac{1}{2} - \frac{1}{6} . \frac{5}{18} \approx 0.314814\)
-							\item c=V, s=non \(\longrightarrow H_G (C > s) = 1 - \frac{9}{25} - \frac{4}{25} = \frac{12}{25}\) and \(H_G (C \leq s) = 1- \frac{25}{49} - \frac{4}{49} = \frac{20}{49}\).
-								\(G(C, couvert) = \frac{4}{9} - \frac{1}{5} . \frac{12}{25} - \frac{1}{7} . \frac{20}{49} \approx 0.2901\)
-						\end{itemize}
-				\end{itemize}
-			\end{frame}
-			\begin{frame}{Exemple: 2D}
-				\begin{figure}[H]
-					\includegraphics[width=.7\textwidth]{images/samples/boundary_decision_tree.png}
-					\caption*{Visualization de la frontière de l'arbre de décision: 2 attributs. Plus l'arbre est profond, plus la frontière est accidentée.}
-				\end{figure}
-			\end{frame}
+		\subsection{Méthodes discriminatives}
+			\subsubsection{Approches géométriques}
+				\begin{frame}{Méthodes de centroïdes}
+					\begin{itemize}
+						\item<1-> On s'inspire du clustering: On assigne la classe dont le centroïde est le plus proche.
+						\item<2-> On pose \(\mu_k = \frac{1}{\vert \{i\in\{1,\dots,n\}: Y^i = k\} \vert}.\sum_{\substack{i=1,\dots,n\\Y^i = k}} X^i\). On peut écrire:
+							\begin{equation}
+								D_{centroid}(x) \triangleq \arg \min_{k=1,\dots,C} \lVert x - \mu_k \rVert
+							\end{equation}
+					\end{itemize}
+				\end{frame}
+				\begin{frame}{Méthodes des centroïdes}
+					\begin{figure}[H]
+						\includestandalone[mode=buildnew, height=.5\textheight]{scatter_circles_class}
+						\caption*{Problème de la méthode de centroïde: les deux classes sont cocentriques.}
+					\end{figure}
+				\end{frame}
+				\begin{frame}{k-NN}
+					\begin{itemize}
+						\item<1-> On choisit les \(k\) instances les plus proches de l'observation \(x\). On assigne à cette observation la classe majoritaire parmi les \(k\) classes de ces voisins.
+						\item<2-> Soit \(o_1,\dots,o_n\) les indices qui guarantissent: \(\lVert x - X^{o_1} \rVert \leq \lVert x - X^{o_2} \rVert \dots \leq \lVert x - X^{o_n} \rVert\). Les \(k\) plus proches voisins sont donc \(\{X^{o_1}, X^{o_2},\dots,X^{o_k}\}\).
+						\item<3-> On définit donc la fonction de décision du k-NN par:
+							\begin{equation}
+								D_{knn}(x) \triangleq \arg \max_{c=1,\dots,C} \sum_{i=1,\dots,k} \mathbb{1}_{Y^{o_i} = c}
+							\end{equation}
+						\item<4-> Plus k augmente, plus les frontières seront lisses.
+					\end{itemize}
+				\end{frame}
 
-			\begin{frame}{Méthodes ensemblistes}
-				\begin{figure}[H]
-					\includestandalone[mode=buildnew, height=.5\textheight]{ensemblist_method}
-					\caption*{Principe des méthodes ensemblistes: chaque fonction de décision (classifieur) a une région où il est mauvais. Une bonne méthode ensembliste cherchera, pour chaque point de l'espace, à éviter d'utiliser les classifieurs qui donnent des erreurs en choisissant la meilleure combinaison.}
-				\end{figure}
-			\end{frame}
-			\begin{frame}{Méthodes ensemblistes: forêt aléatoire}
-				\begin{figure}[H]
-					\includestandalone[mode=buildnew, height=.6\textheight]{circles_dt}
-					\caption*{Frontière d'un arbre de décision: on remarque qu'il sur-apprend sur les observations données.}
-				\end{figure}
-			\end{frame}
-			\begin{frame}{Méthodes ensemblistes: forêt aléatoire}
-				\begin{figure}[H]
-					\includestandalone[mode=buildnew, height=.6\textheight]{circles_rf}
-					\caption*{Frontière d'une forêt aléatoire: on multiplie les arbres de décisions (en vert) peu profond (donc qui sous-apprennent). Chaque arbre donne une classe probable. Elles sont toute conbinée pour donner la classe finale.}
-				\end{figure}
-			\end{frame}
-			\begin{frame}{Forêt aléatoire}
-				\begin{itemize}
-					\item<1-> Pour construire une forêt aléatoire qui contient \(A\) arbres;
-					\item<2-> Pour chacun des \(A\) arbres, on sélectionne aléatoirement une sous partie des attributs: \(X^i_{(a)} = \begin{pmatrix}
-						X^i_{o^a_1} & X^i_{o^a_2} & \vdots & X^i_{o^a_{d_a}}
-					\end{pmatrix}^T, \quad \forall a = 1,\dots,A  i=1,\dots,n\).
-					\item<3-> On construit un arbre de décision simple qui sera expert en un sous espace de l'espace s'attributs.
-					\item<4-> Pour connaître la classe de \(x \in \mathbb{R}^d\), on sélectionne les attributs \(x_a, \quad \forall a = 1,\dots,A\) et on fait passer chacun par l'arbre qui correspond.
-					\item<5-> Cela donne les classes \(y_a, \quad \forall a = 1,\dots,A\). Par vote majoritaire, on décide la classe la plus probable:
-						\begin{equation}
-							D_{random\ forest, absolute} (x) \triangleq \arg \max_{k=1,\dots,C} \vert \{a \in \{1,\dots,A\}: y_a = k\} \vert
-						\end{equation}
-					\item<6-> On peut extraire aussi le couple classe et sa probabilité de chaque arbre \((y_a, p_a), \quad \forall a = 1,\dots,A\). On relache la définition précédente pour donner:
-						\begin{equation}
-							D_{random\ forest, weighted} (x) \triangleq \arg \max_{k=1,\dots,C} \sum_{\substack{a=1,\dots,A\\y_a = k}} p_a
-						\end{equation}
-			\end{itemize}
-			\end{frame}
+			\subsubsection{Arbre aléatoire}
+				\begin{frame}{Arbres de décision: exemple}
+					\begin{figure}[H]
+						\includegraphics[width=.65\textwidth]{images/samples/example_dt_iris_dataset.png}
+						\caption*{Exemple d'arbre de décision appliquée à le jeu de données Iris: 4 attributs (longueur de sépale, largeur de sépale, longueur de pétale et largeur de pétale) et 3 classes: (``Iris Setosa'', ``Iris Versicolour'', ``Iris Virginica'').}
+					\end{figure}
+				\end{frame}
+				\begin{frame}{Arbres de décision: construction}
+					\begin{itemize}
+						\item<1-> On commence par la racine: toutes les instances sont présentes.
+						\item<2-> On choisit l'attribut et le seuil qui permettent de séparer le mieux les observations en groupes homogènes.
+						\item<3-> On répète la deuxième étape à chaque groupe jusqu'à:
+							\begin{itemize}
+								\item<4-> Atteindre un groupe pur: il ne contient que des observations ayant la même classe;
+								\item<5-> Atteindre un critère d'arrêt.
+							\end{itemize}
+					\end{itemize}
+				\end{frame}
+				\begin{frame}{Arbres de décision: critère d'arrêt}
+					Exemples:
+					\begin{itemize}
+						\item<1-> Nombre minimum d’observations par groupe.
+						\item<2-> Toutes les observations d’une branche sont de la même classe (feuille pure).
+						\item<3-> Degré de pureté maximal atteint \(p\): \(\frac{\vert Y \vert}{\vert G\vert} \geq p\), où: \(Y\) est l'ensemble des instances de la classe majoritaire et \(G\) l'ensemble de toutes les observations dans le groupe en question. Le cas précédent est un cas particulier avec \(p = 1\).
+						\item<4-> Profondeur\footnote{le nombre maximal de choix pour aller du jeu de données initial à une feuille} de l’arbre maximale atteinte.
+					\end{itemize}
+				\end{frame}
+				\begin{frame}{Arbres de décision: mesure d'hétérogénéité}
+					\begin{itemize}
+						\item<1-> Soit \(S\) une famille (répétitivité possible) d'éléments. Dans notre cas, \(S := ((Y^i)_{i=1,\dots,n})\).
+						\item<2-> On définit \(p_k := \frac{\vert \big\{i \in \{1,\dots,n\}: Y^i = k\big\}\vert}{n}\) la probabilité empirique de la valeur \(k \in \{1,\dots,C\}\).
+						\item<3-> On désire mesurer son hétérogénéité par rapport aux classes \(Y^i\). Soit \(H: S\mapsto H(S)\) une telle mesure.
+						\item<4-> Le cas le moins hétérogène est le cas \(\exists k_0, \forall k, p_k = \delta_{k_0}(k)\). Dans ce cas, \(H(S)\) doit atteindre son minimum.
+						\item<5-> Le maximum de \(H\), par contre, est atteint dans le cas où toutes les valeurs de classes sont également probables: \(p_k = \frac{1}{C}, \quad \forall k=1,\dots,C\): le cas le plus hétérogène.
+						\item<6-> Exemples de telles mesures:
+							\begin{itemize}
+								\item L'entropie:
+									\begin{equation}
+										H_E \triangleq - \sum_{k=1}^C p_k . \ln(p_k)
+									\end{equation}
+								\item L'indice de Ginni:
+									\begin{equation}
+										H_G \triangleq \sum_{k=1}^C p_k(1-p_k) = 1 - \sum_{k=1}^C p_k^2
+									\end{equation}
+							\end{itemize}
+					\end{itemize}
+				\end{frame}
+				\begin{frame}{Arbres de décision: mesure de qualité de séparation}
+					\begin{itemize}
+						\item<1-> Soit \(\big(S_k\big)_{k = 1, \dots, K}\) une \(K\)-partition de \(S\).
+						\item<2-> Une bonne séparation se traduit par un gain d'homogéniété après séparation: i.e. les sous-ensembles \(S_k\) sont moins hétérogènes que l'ensemble d'origine.
+						\item<3-> On définit le gain de la partition \(\big(S_k\big)_{k = 1, \dots, K}\) par:
+							\begin{equation}
+								G\big((S_1, \dots, S_K)\big) \triangleq H(S) - \sum_{k=1}^K \frac{\vert S_k \vert}{\vert S \vert}H(S_k)
+							\end{equation}
+						\item<4-> Trois cas se précisent:
+							\begin{itemize}
+								\item<5-> \(G\big((S_1, \dots, S_K)\big) > 0\): la partition permet de bien séparer \(S\) de façon à avoir des sous-ensembles plus ``purs'';
+								\item<6-> \(G\big((S_1, \dots, S_K)\big) = 0\): la partition donne des sous-ensembles aussi hétérogène que \(S\): on ne gagne rien;
+								\item<7-> \(G\big((S_1, \dots, S_K)\big) < 0\): la partition perd en ``pureté'' par rapport à \(S\).
+							\end{itemize}
+					\end{itemize}
+				\end{frame}
+				\begin{frame}{Arbres de décision: mesure de qualité de séparation}
+					\begin{itemize}
+						\item<1-> L'arbre naïf choisirait des critères sur \(Y^i\). Sauf que ces classes ne seront pas observables, en phase, de test.
+						\item<2-> On choisit le couple attribut \(X_c\) et seuil \(s\) le plus discriminant: les seules partitions possibles sont: \(S_1 := \{i \in S: X_c - s > 0\}\) ou \(S_2 := \{i \in S: X_c - s \leq 0\}\).
+						\item<3-> Dans ce cas, par abus de language, on note le gain de cette séparation: \(G(c, s) := G\big((S_1, S_2)\big)\)
+						\item<4-> Cela revient à résoudre le problème:
+							\begin{equation}
+								\arg \max_{\substack{c=1,\dots,d\\s \in \mathscr{S}_c}} G(c, s)
+							\end{equation}
+							où \(\mathscr{S}_c\) est l'ensemble de valeurs possibles pour l'attribut \(c\).
+					\end{itemize}
+				\end{frame}
+				\begin{frame}{Exemple: Tennis or no Tennis}
+					\begin{table}[H]
+						\begin{center}
+							\begin{tabular}{c c c c c}
+								\toprule
+								Temps (C) & Température (T) & Humidité (H) & Vent (V) & Tennis\\
+								\midrule
+								soleil & chaud & élevée & non & non\\
+								soleil & chaud & élevée & oui & non\\
+								couvert & chaud & élevée & non & oui\\
+								pluie & tiède & élevée & non & oui\\
+								pluie & froid & normale & non & oui\\
+								pluie & froid & normale & oui & non\\
+								couvert & froid & normale & oui & oui\\
+								soleil & tiède & élevée & non & non\\
+								soleil & froid & normale & non & oui\\
+								pluie & tiède & normale & non & oui\\
+								soleil & tiède & normale & oui & oui\\
+								couvert & tiède & élevée & oui & oui\\
+								couvert & chaud & normale & non & oui\\
+								\bottomrule
+							\end{tabular}
+						\end{center}
+					\end{table}
+				\end{frame}
+				\begin{frame}{Exemple: Tennis or no Tennis}
+					\begin{itemize}
+						\item<1-> Racine: 9 | 4 \(\longrightarrow H_G = 1 - \frac{1}{9} - \frac{4}{9} = \frac{4}{9}\) ;
+							\begin{itemize}
+								\small
+								\item c=C, s=couvert: \(\longrightarrow H_G (C > s) = 1 - \frac{9}{25} - \frac{4}{25} = \frac{12}{25}\) and \(H_G (C \leq s) = 1- \frac{25}{49} - \frac{4}{49} = \frac{20}{49}\).
+									\(G(C, couvert) = \frac{4}{9} - \frac{1}{5} . \frac{12}{25} - \frac{1}{7} . \frac{12}{49} \approx 0.2901\)
+								\item c=C, s=pluie \(\longrightarrow H_G (C > s) = 1 - \frac{25}{64} - \frac{9}{64} = \frac{15}{32}\) and \(H_G (C \leq s) = 1- \frac{1}{16} - \frac{9}{16} = \frac{3}{8}\).
+									\(G(C, couvert) = \frac{4}{9} - \frac{1}{4} . \frac{3}{8} - \frac{1}{8} . \frac{15}{32} \approx 0.2921\)
+								\item c=T, s=tiède \(\longrightarrow H_G (C > s) = 1 - \frac{1}{4} - \frac{1}{4} = \frac{1}{2}\) and \(H_G (C \leq s) = 1- \frac{36}{64} - \frac{4}{64} = \frac{3}{8}\).
+									\(G(C, couvert) = \frac{4}{9} - \frac{1}{2} . \frac{1}{2} - \frac{1}{8} . \frac{3}{8} \approx 0.1476\)
+								\item c=T, s=froid \(\longrightarrow H_G (C > s) = 1 - \frac{25}{64} - \frac{9}{64} = \frac{15}{32}\) and \(H_G (C \leq s) = 1- \frac{1}{16} - \frac{9}{16} = \frac{3}{8}\).
+									\(G(C, couvert) = \frac{4}{9} - \frac{1}{4} . \frac{3}{8} - \frac{1}{8} . \frac{15}{32} \approx 0.2921\)
+								\item \textbf{c=H, s=normale} \(\longrightarrow H_G (C > s) = 1 - \frac{1}{4} - \frac{1}{4} = \frac{1}{2}\) and \(H_G (C \leq s) = 1- \frac{25}{36} - \frac{1}{36} = \frac{5}{18}\).
+									\(G(C, couvert) = \frac{4}{9} - \frac{1}{6} . \frac{1}{2} - \frac{1}{6} . \frac{5}{18} \approx 0.314814\)
+								\item c=V, s=non \(\longrightarrow H_G (C > s) = 1 - \frac{9}{25} - \frac{4}{25} = \frac{12}{25}\) and \(H_G (C \leq s) = 1- \frac{25}{49} - \frac{4}{49} = \frac{20}{49}\).
+									\(G(C, couvert) = \frac{4}{9} - \frac{1}{5} . \frac{12}{25} - \frac{1}{7} . \frac{20}{49} \approx 0.2901\)
+							\end{itemize}
+					\end{itemize}
+				\end{frame}
+				\begin{frame}{Exemple: 2D}
+					\begin{figure}[H]
+						\includegraphics[width=.7\textwidth]{images/samples/boundary_decision_tree.png}
+						\caption*{Visualization de la frontière de l'arbre de décision avec 2 attributs. Plus l'arbre est profond, plus la frontière est accidentée.}
+					\end{figure}
+				\end{frame}
+
+			\subsubsection{Forêt aléatoire}
+				\begin{frame}{Méthodes ensemblistes}
+					\begin{figure}[H]
+						\includestandalone[mode=buildnew, height=.5\textheight]{ensemblist_method}
+						\caption*{Principe des méthodes ensemblistes: chaque fonction de décision (classifieur) a une région où il est mauvais. Une bonne méthode ensembliste cherchera, pour chaque point de l'espace, à éviter d'utiliser les classifieurs qui donnent de mauvais résultats en choisissant la meilleure combinaison de classifieurs.}
+					\end{figure}
+				\end{frame}
+				\begin{frame}{Méthodes ensemblistes: forêt aléatoire}
+					\begin{figure}[H]
+						\includestandalone[mode=buildnew, height=.6\textheight]{circles_dt}
+						\caption*{Frontière d'un arbre de décision: on remarque qu'il sur-apprend sur les observations données.}
+					\end{figure}
+				\end{frame}
+				\begin{frame}{Méthodes ensemblistes: forêt aléatoire}
+					\begin{figure}[H]
+						\includestandalone[mode=buildnew, height=.6\textheight]{circles_rf}
+						\caption*{Frontière d'une forêt aléatoire: on multiplie les arbres de décisions (en vert) peu profonds (donc qui sous-apprennent). Chaque arbre donne la classe probable selon lui. Elles sont toutes conbinées pour donner la classe finale.}
+					\end{figure}
+				\end{frame}
+				\begin{frame}{Forêt aléatoire: construction}
+					\begin{itemize}
+						\item<1-> Pour construire une forêt aléatoire qui contient \(A\) arbres;
+						\item<2-> Pour chacun des \(A\) arbres, on sélectionne aléatoirement une sous partie des attributs: \(X^i_{(a)} = \begin{pmatrix}
+							X^i_{o^a_1} & X^i_{o^a_2} & \dots & X^i_{o^a_{d_a}}
+						\end{pmatrix}^T, \quad \forall a = 1,\dots,A  i=1,\dots,n\).
+						\item<3-> Chaque arbre de décision sera construit en fonction d'un sous-ensemble des données initiales et dans un sous-espace de l'espace d'attributs.
+						\item<4-> Pour connaître la classe de \(x \in \mathbb{R}^d\), on sélectionne les attributs \(x_a, \quad \forall a = 1,\dots,A\) et on fait passer chacun par l'arbre qui correspond.
+						\item<5-> Cela donne les classes \(y_a, \quad \forall a = 1,\dots,A\). Par vote majoritaire, on décide la classe la plus probable:
+							\begin{equation}
+								D_{random\ forest, absolute} (x) \triangleq \arg \max_{k=1,\dots,C} \vert \{a \in \{1,\dots,A\}: y_a = k\} \vert
+							\end{equation}
+						\item<6-> On peut extraire aussi le couple (classe, probabilité) de chaque arbre \((y_a, p_a), \quad \forall a = 1,\dots,A\). On relache la définition précédente pour donner:
+							\begin{equation}
+								D_{random\ forest, weighted} (x) \triangleq \arg \max_{k=1,\dots,C} \sum_{\substack{a=1,\dots,A\\y_a = k}} p_a
+							\end{equation}
+					\end{itemize}
+				\end{frame}
 	
 	\section{Evaluation de classifieur}
 		\subsection{Principe}
 			\begin{frame}{Evaluer une classification}
 				\begin{itemize}
-					\item<1-> Évaluation: comparaison de résultats d’une classifications aux données de référence.
-					\item<2-> On compte le nombre de fois où le classifieur donne une mauvaise réponse, à opposer à une bonne réponse.
+					\item<1-> Évaluation: comparaison de résultats d’une classification aux données de référence.
+					\item<2-> On compte le nombre de fois où le classifieur donne une mauvaise réponse, à opposer au nombre de fois où il donne une bonne réponse.
 					\item<3-> Plus la vérité terrain est exhaustive (couvre de classes d’intérêt), meilleure est la compréhension des limites de la classification.
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{}
+			\begin{frame}{Motivation}
 				\begin{itemize}
 					\item<1-> Comparaison de classifieur : i.e. décision pour savoir si un classifieur est meilleur qu’un autre;
-					\item<2-> Choisir les meilleurs paramètres du classifieur.
+					\item<2-> Choisir les meilleurs paramètres pour un modèle de classifieur.
 				\end{itemize}
 			\end{frame}
 		\subsection{Matrice de confusion et ratios}
@@ -899,7 +914,7 @@
 						\end{equation}
 					\item<3-> F-score: moyenne harmonique de la précision et du rappelle:
 						\begin{equation}
-							F_{score} = \frac{2}{\frac{1}{P} + \frac{1}{P}}
+							F_{score} = \frac{2}{\frac{1}{P} + \frac{1}{R}}
 						\end{equation}
 				\item<4-> Taux de bonne classification:
 						\begin{equation}
@@ -907,7 +922,7 @@
 						\end{equation}
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{ROC}
+			\begin{frame}{Receiver operating characteristic}
 				Dans le case de classification binaire, on calcule les deux ratios:
 				\begin{itemize}
 					\item<1-> Taux de Faux Positifs (FPR):
@@ -926,14 +941,14 @@
 			\begin{frame}{Espace ROC}
 				\begin{figure}[H]
 					\includegraphics[width=.45\textwidth]{images/samples/roc.png}
-					\caption*{Espace de ROC~\cite{schrynemackers2009using}. Le classifieur correspondant au point (C) ``déapprend'': il est pire que le classifieur aléatoire.}
+					\caption*{Espace de ROC~\cite{schrynemackers2009using}. Le classifieur correspondant au point (C) ``dés-apprend'': il est pire que le classifieur aléatoire.}
 				\end{figure}
 			\end{frame}
 			\begin{frame}{Courbe ROC}
 				\begin{itemize}
 					\item<1-> Un classifieur discret produit un unique couple (FPR, TPR), qui correspond à un point unique dans l’espace ROC.
 					\item<2-> Certains classifieurs fournissent un score ou une probabilité d’appartenance: le degré de confiance en l’appartenance à la classe.
-					\item<3-> En fixant un seuil de score, on se demande, à une confiance supérieure au seuil, quelle serait la qualité du classifieur: affichée par le point correspondant dans l'espace ROC.
+					\item<3-> On peut évaluer la qualité d'une classification en fonction d'un ensemble de seuils du score obtenu en sortie. Chaque seuil crée un point différent dans l'espace ROC.
 					\item<4-> On obtient ainsi une courbe ROC pour chaque seuil envisageable.
 				\end{itemize}
 			\end{frame}
@@ -943,7 +958,7 @@
 					\caption*{Exemples de courbes ROC~\cite{ROCS}.}
 				\end{figure}
 			\end{frame}
-			\begin{frame}{AUC}
+			\begin{frame}{Area Under Curve}
 				\begin{itemize}
 					\item<1-> On peut définir un seul scalaire pour ordonner les courbes ROC. On définit l'aire sous la courbe (Area Under Curve) d'un classifieur \(\mathscr{C}\) avec une courbe \(\mathscr{R}(\mathscr{C})\):
 					\begin{equation}
@@ -951,21 +966,21 @@
 					\end{equation}
 					\item<2-> Plus le \(AUC\) est grand, meilleur est le classifieur.
 					\item<3-> Le classifieur aléatoire a \(AUC(Rand) = 0.5\).
-					\item<4->\(AUC(\mathscr{C}) \leq 0.5 \Longrightarrow\) \(\mathscr{C}\) n'apprend rien.
+					\item<4->\(AUC(\mathscr{C}) \leq 0.5 \Longrightarrow\) \(\mathscr{C}\) apprend mal.
 				\end{itemize}
 			\end{frame}
 		\subsection{Validation croisée}
 			\begin{frame}{Principe}
 				\begin{itemize}
 					\item<1-> Les échantillons jouent un rôle important dans l'apprentissage.
-					\item<2-> Comment réagissent les scores d'évaluation de classifieur quand on rajoutte plus de données?
-					\item<3-> Comment choisir les meilleurs paramètres de classifieur pour avoir la meilleur stabilité de résultats?
+					\item<2-> Comment réagissent les scores d'évaluation d'un classifieur quand on rajoutte plus de données?
+					\item<3-> Comment choisir les meilleures paramètres d'un classifieur pour avoir les résultats les plus stables possibles?
 				\end{itemize}
 			\end{frame}
 			\begin{frame}{Procédure}
 				\begin{itemize}
 					\item<1-> On divise donc la base de données en \(k\) parties.
-					\item<2-> On fusionne \(k-1\) parties et entraîne dessus le classifieur. On test sur la partie restante.
+					\item<2-> On fusionne \(k-1\) parties et entraîne dessus le classifieur. On teste sur la partie restante.
 					\item<3-> Il y a donc \(\binom{k}{k-1} = k\) cas.
 					\item<4-> On conduit les \(k\) expériences. On peut donc calculer des statistiques sur ces résultats.
 					\item<5-> On peut ainsi comparer des classifieurs en comparant ces statistiques.
