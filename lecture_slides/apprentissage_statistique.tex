@@ -556,40 +556,60 @@
 					\end{align*}
 				\end{itemize}
 			\end{frame}
-			\begin{frame}{Risque empirique}
-				\begin{itemize}
-					\item<1-> Le risque empirique est défini par:
-						\begin{equation}
-							R_n(D) \triangleq \sum_{i=1}^n \mathbb{1}_{D(X^i) \neq Y^i} \underset{n\infty}{\longrightarrow} R(D)
-						\end{equation}
-					\item<2-> Soit \(D^*\) la fonction de décision optimale. Elle vérifie:
-						\begin{equation}
-							D^* \triangleq \arg\min_{D \in \mathscr{F}} R(D)
-						\end{equation}
-					\item<3-> Soit \(\widehat D \) la fonction de décision empirique optimale:
-						\begin{equation}
-							\widehat D_n \triangleq \arg\min_{D \in \mathscr{F}} R_n(D)
-						\end{equation}
-					\item<3-> Exemple d'ensemble de recherche: \(\mathscr{F} = \{1, \dots, C\}^{\mathbb{R}^d}\) l'ensemble de toutes les fonctions possibles.
-					\item<4-> Ce dernier choix est trop naïf. En effet, on défini la fonction de décision \(D_{na\"{i}ve}: x \mapsto \sum_{i=1,\dots,n} Y^i . \delta_{X^i}(x) + \mathbb{1}_{x \notin \{X^i, \forall i=1,\dots,n\}}\). On observe que \(R_n(D_{naïve}) = 0\).
-				\end{itemize}
-			\end{frame}
 			\begin{frame}{Regret: mesure d'erreur}
 				\begin{center}
 					\begin{figure}[H]
 						\includegraphics[width=.8\textwidth]{images/samples/illustration_difference_separator.png}
-						\caption*{Illustration de l'espace \(D(X)\neq Y\): où \(Y \in \{0, 1\}\) et \(X \in \mathbb{R}^2\).}
+						\caption*{Illustration de l'espace \(D(X)\neq Y\): où \(Y \in \{0, 1\}\) et \(X \in \mathbb{R}^2\). Le regret est interprété comme l'\textbf{aire} de la surface hachurée selon la mesure \(p(dx, y)\)}
 					\end{figure}	
 				\end{center}
 			\end{frame}
-			\begin{frame}{Sur/Sous apprentissage}
+			\begin{frame}{Risque empirique}
 				\begin{itemize}
-					\item<1-> On quantifie la différence de \(\widehat D_n \) par rapport à la fonction de décision optimale par:
+					\item<1-> Le risque empirique est défini par:
 						\begin{equation}
-							R(\widehat D_n) - \min_{D \in \{1, \dots, C\}^{\mathbb{R}^d}} R(D) = \overbrace{R(\widehat D_n) - R(D^*)}^{la\ variance} + \overbrace{R(D^*) - \min_{D \in \{1, \dots, C\}^{\mathbb{R}^d}} R(D)}^{le\ biais}
+							R_n(D) \triangleq \frac{1}{n} . \sum_{i=1}^n \mathbb{1}_{D(X^i) \neq Y^i} \underset{n\infty}{\longrightarrow} R(D)
 						\end{equation}
-					\item<2-> Le terme de variance exprime la différence, purement stochastique, entre l'optimum \(D^*\) conditionné dans l'ensemble \(\mathscr{F}\) et l'optimum empirique;
-					\item<3-> le terme de biais exprime la différence entre l'optimum \(D^*\) par rapport à la vérité terrain.
+					\item<2-> Soit \(D^*_\mathscr{F}\) la fonction de décision optimale. Elle vérifie:
+						\begin{equation}
+							D^*_\mathscr{F} \triangleq \arg\min_{D \in \mathscr{F}} R(D)
+						\end{equation}
+					\item<3-> Soit \(\widehat D_n \) la fonction de décision empirique optimale:
+						\begin{equation}
+							\widehat D_n \triangleq \arg\min_{D \in \mathscr{F}} R_n(D)
+						\end{equation}
+					\item<3-> Exemple d'ensemble de recherche: 
+					\begin{itemize}
+						\item<4-> \(\mathscr{F}_{Total} \triangleq \{1, \dots, C\}^{\mathbb{R}^d}\): l'ensemble de toutes les fonctions possibles;
+						\item<5-> \(\mathscr{F}_{Linear}\): l'ensemble de toutes les fonctions de séparation linéaires;
+						\item<5-> \(\mathscr{F}_{Circle}\): l'ensemble de toutes les fonctions de séparation circulaires;
+						\item<6-> \dots
+					\end{itemize}
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Choix de l'ensemble de recherche}
+				\begin{itemize}
+					\item<1-> Le choix de modèle de fonction de décision est important.
+					\item<2-> Un choix naïf est de prendre toute les fonctions possibles. 
+					\item<3-> Ce choix est mal adapté: on défini \(D_{naive}: x \mapsto \sum_{i=1,\dots,n} Y^i . \delta_{X^i}(x) + \mathbb{1}_{x \notin \{X^i, \forall i=1,\dots,n\}}\).
+					\item<4-> On observe que: \(R_n(D_{naive}) = 0\). Il ne fait aucune erreur sur les données d'entraînement mais n'a aucun pouvoir de généralisation.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Décomposition biais/variance}
+				\begin{itemize}
+					\item<1-> On quantifie la différence de \(\widehat D_n \) par rapport à la fonction de décision optimale par~\cite{tsybakovpoly}:
+						\begin{equation}
+							R(\widehat D_n) - \min_{D \in \mathscr{F}_{Total}} R(D) = \overbrace{R(\widehat D_n) - R(D^*_\mathscr{F})}^{la\ variance} + \overbrace{R(D^*_\mathscr{F}) - \min_{D \in \mathscr{F}_{Total}} R(D)}^{le\ biais}
+						\end{equation}
+					\item<2-> Le terme de variance exprime la différence, purement stochastique, entre l'optimum \(D^*_\mathscr{F}\) sur l'ensemble  de recherche \(\mathscr{F}\) et l'optimum empirique;
+					\item<3-> le terme de biais exprime la différence entre l'optimum \(D^*_\mathscr{F}\) par rapport à la vérité terrain.
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Compromis biais/variance}
+				\begin{itemize}
+					\item<1-> La variance exprime l'\textit{erreur de paramètrage} entre la fonction de décision choisie \(\widehat D_n\) est la meilleure estimation possible \(D^*_\mathscr{F}\): sous \textit{certaines conditions}~\cite{tsybakovpoly}, il est prouvable que \(\widehat D_n \underset{n\infty}{\longrightarrow} D^*_\mathscr{F}\).
+					\item<2-> Le biais exprime l'\textit{erreur de modélisation} entre le choix de type de fonction de décision et la vérité terrain. En pratique, on ne connaît pas la distribution réelle des données: il n'y a donc aucune garantie sur ce terme.
+					\item<3-> Généralement, il y a un compromis à faire entre faible biais (overfitting) et faible variance (modèle peu compliqué \(\Rightarrow\) underfitting)~\cite{tsybakovpoly}.
 				\end{itemize}
 			\end{frame}
 			\begin{frame}[plain]{Sur/Sous apprentissage: le compromis}
@@ -844,7 +864,7 @@
 				\begin{frame}{Méthodes ensemblistes: forêt aléatoire}
 					\begin{figure}[H]
 						\includestandalone[mode=buildnew, height=.6\textheight]{circles_rf}
-						\caption*{Frontière d'une forêt aléatoire: on multiplie les arbres de décisions (en vert) peu profonds (donc qui sous-apprennent). Chaque arbre donne la classe probable selon lui. Elles sont toutes conbinées pour donner la classe finale.}
+						\caption*{Frontière d'une forêt aléatoire: on multiplie les arbres de décisions (toute les couleurs sauf le violet) peu profonds (donc qui sous-apprennent). Chaque arbre donne la classe probable selon lui. Elles sont toutes conbinées pour donner la classe finale: séparation en violet.}
 					\end{figure}
 				\end{frame}
 				\begin{frame}{Forêt aléatoire: construction}
@@ -861,7 +881,7 @@
 							\end{equation}
 						\item<6-> On peut extraire aussi le couple (classe, probabilité) de chaque arbre \((y_a, p_a), \quad \forall a = 1,\dots,A\). On relache la définition précédente pour donner:
 							\begin{equation}
-								D_{random\ forest, weighted} (x) \triangleq \arg \max_{k=1,\dots,C} \sum_{\substack{a=1,\dots,A\\y_a = k}} p_a
+								D_{random\ forest, weighted} (x) \triangleq \arg \max_{k=1,\dots,C} \sum_{a=1}^{A} p_a(y_a = k)
 							\end{equation}
 					\end{itemize}
 				\end{frame}
@@ -902,23 +922,27 @@
 					\caption*{Matrice de confusion: \(n_{ij}\) nombre d'éléments de classe \(j\) et prédits de classe \(i\).}
 				\end{table}
 			\end{frame}
-			\begin{frame}{Ratios}
+			\begin{frame}{Ratios: rappel et précision}
 				\begin{itemize}
 					\item<1-> Rappel: exhaustivité de la détection. Parmi les éléments qui font partie d'une classe donnée, combien sont bien prédit correctement:
 						\begin{equation}
-							R = \frac{n_{ii}}{\sum_i n_{ij}}
+							R = \frac{n_{jj}}{\underbrace{\sum_{i=1}^C n_{ij}}_{\text{vérité terrain de classe } j}}
 						\end{equation}
 					\item<2-> Précision: exactitude des prédiction. Parmi les éléments qui sont prédits être d'une classe donnée, combien en font partie réellement:
 						\begin{equation}
-							P = \frac{n_{ii}}{\sum_j n_{ij}}
+							P = \frac{n_{ii}}{\underbrace{\sum_{j=1}^C n_{ij}}_{\text{éléments prédits de classe } i}}
 						\end{equation}
-					\item<3-> F-score: moyenne harmonique de la précision et du rappelle:
+				\end{itemize}
+			\end{frame}
+			\begin{frame}{Ratios: F-score et bonne classification}
+				\begin{itemize}
+					\item<1-> F-score: moyenne harmonique de la précision et du rappelle:
 						\begin{equation}
 							F_{score} = \frac{2}{\frac{1}{P} + \frac{1}{R}}
 						\end{equation}
-				\item<4-> Taux de bonne classification:
+					\item<2-> Taux de bonne classification:
 						\begin{equation}
-							OA = \frac{\sum_i n_{ii}}{\sum_{i,j} n_{ij}}
+							OA = \frac{\sum_{i=1}^C n_{ii}}{\sum_{i,j=1}^C n_{ij}}
 						\end{equation}
 				\end{itemize}
 			\end{frame}
