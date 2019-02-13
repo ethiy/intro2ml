@@ -948,14 +948,28 @@
 			\end{frame}
 			\begin{frame}{Receiver operating characteristic}
 				Dans le case de classification binaire, on calcule les deux ratios:
+				\begin{table}[H]
+					\begin{tabular}{| c | c | c | c |}
+						\hline
+						& \multicolumn{3}{c |}{Vérité terrain}\\
+						\hline
+						\multirow{3}{*}{\rotatebox{90}{Préd.}}& & 0 & 1\\
+						\cline{2-4}
+						& 0 & \(n_{00}\): True Negative & \(n_{01}\): False Negative\\
+						\cline{2-4}
+						& 1 & \(n_{10}\): False Positive & \(n_{11}\): True Positifve\\
+						\hline
+					\end{tabular}
+					\caption*{Matrice de confusion: \(n_{ij}\) nombre d'éléments de classe \(j\) et prédits de classe \(i\).}
+				\end{table}
 				\begin{itemize}
 					\item<1-> Taux de Faux Positifs (FPR):
 						\begin{equation}
-							FPR = \frac{n_{00}}{n_{00} + n_{10}}
+							FPR = \frac{n_{10}}{n_{00} + n_{10}}
 						\end{equation}
 					\item<2-> Taux de Vrais Positifs (TPR):
 						\begin{equation}
-							TPR = R
+							TPR = R = \frac{n_{11}}{n_{01} + n_{11}}
 						\end{equation}
 				\end{itemize}
 				\uncover<3->{
